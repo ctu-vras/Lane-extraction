@@ -1,0 +1,5 @@
+# Use command: "pip freeze > requirements.txt" to store current pip packages into requirements file
+
+# Set up installation of useful packages in future, now use separately
+
+# version of torch as on server
