@@ -4,4 +4,4 @@
 
 # Discord tmp link
 
-https://discord.gg/FuCjgnXA
+https://discord.gg/wa4qwwANK
