@@ -78,23 +78,16 @@ https://drive.google.com/drive/folders/1urwhi2SGGB3U7t3_JgcvFU1kCCE-ksuS?usp=sha
 https://discord.gg/wa4qwwANK
 
 # brain dump 23.6. Valeo Meeting
-- Classic pipeline - premyslet nad differencovatelnosti
-- Segmentace? - pridat normaly do vzorce intensity, vzdalenost asi kompenzovana, normala?
+
 - Linearni / nelinearni mod LiDARu (skalovani) - jak dostat?
 - Filtrace - podle intenzity a vzdalenosti
 - Dataset bez filtrace pro normaly?
-- Valeo dataset sdileny
-- Scan id = time frame 
 - bottleneck je furt ta segmentace
 - Ground fit jako mesh sit?
 - filter ground by variance in bin? Still with pts above, smoothing
 - Vahovat ground plane intensitou, normalou etc. - jedno tema
-- fittovani id podle registraci znamych shapu z banky
-- dbscan clustering stejneho smeru? No jako flow
 - RANSAC - residual threshold prvotni filtrovani
-- Pytorch nacpat vsechno to jednoho frameworku - moduly?
-- full point cloud je heavy jak prase na optimization aproach
-- Animace v sekvenci? Nekdo by mohl udelat
+- full point cloud je heavy na optimization aproach
 - Intra/inter frame matching
 - optimalizace vede na object-unique features - mozna neni dobre?
 - KPI? - segmentace GT - udelat id, fitting a jak to zpetne zapadne do segmentace?
