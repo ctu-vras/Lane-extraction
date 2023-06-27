@@ -18,7 +18,9 @@
 # Segmentation
 ![alt text](schemes/images/segmentation.png)
 # Instance
+L_PCA
 # Matching
+L_NN, L_Smooth
 
 ![alt text](schemes/images/lanes_method.png)
 
