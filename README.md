@@ -1,6 +1,5 @@
 # Lane-extraction
 
-
 | Person |      Module       | Other Tasks | Notes | 
 |--------|:-----------------:|------------:|------:|
 | Yana   |  Init Framework   |             |       |
@@ -55,8 +54,8 @@
   - I have a script for "remote" and fluent point cloud visualization using pptk library, We will discuss that when you have problems with visuals from the server 
  
 # Data on drive 
-- let me know if access needed
-- Discuss between you how to structure data for the project to fit your workflow
+- Let me know if access is needed
+- Discuss between each other how to structure data for the project to fit your workflow
 - Data: https://drive.google.com/drive/folders/1urwhi2SGGB3U7t3_JgcvFU1kCCE-ksuS?usp=sharing
 
 
@@ -65,7 +64,7 @@
  
 
 # Segmentation
-![alt text](schemes/images/segmentation.png)
+![alt text](doc/images/segmentation.png)
 
 - [ ] Start with one data sequence with labels from Filip (point-wise)
 - [ ] After loading the data, everything should be in pytorch
@@ -76,7 +75,7 @@
 - [ ] Visualize performance in table (recommend pandas) and graph (matplotlib)
 
 # Instance
-![alt text](schemes/images/instance.png)
+![alt text](doc/images/instance.png)
 
 - [ ] Start with synthetically generated data (in example)
 - [ ] Try dbscan to get the ids to understand the format
@@ -92,7 +91,7 @@
     - [ ] How to split bigger clusters to lanes?
   
 # Lane direction vectors
-![alt text](schemes/images/instance_matching.png)
+![alt text](doc/images/instance_matching.png)
 
 - [ ] Generate toy samples of instance centers (matplotlib ginput for example)
 - [ ] Assign vector field to the points represented as torch tensors Idx x [vx,vy]
@@ -104,7 +103,7 @@
 - [ ] Add pca loss from instance module to the solution
 
 # Full pipeline so far
-![alt text](schemes/images/lanes_method.png)
+![alt text](doc/images/lanes_method.png)
 
 
 
