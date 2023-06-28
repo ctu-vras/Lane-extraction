@@ -1,6 +1,6 @@
 #!/bin/bash
 
-cd schemes && bash gen_img.sh && cd ..
+cd doc && bash gen_img.sh && cd ..
 
 git add .
 git commit -m "full update"
