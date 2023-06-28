@@ -19,40 +19,41 @@
 # Segmentation
 ![alt text](schemes/images/segmentation.png)
 
-- Start with one data sequence with labels from Filip (point-wise)
-- After loading the data, everything should be in pytorch
-- Data loading should have a choice to load fever time-frames
-- IoU metric to evaluate the segmentation (codes in the repo)
-- Experiment with different hyperparameters (thresholds, points for normal ...) 
-- Visualize normals (mayavi is good for this, example in the repo)
-- Visualize performance in table (recommend pandas) and graph (matplotlib)
+- [ ] Start with one data sequence with labels from Filip (point-wise)
+- [ ] After loading the data, everything should be in pytorch
+- [ ] Data loading should have a choice to load fever time-frames
+- [ ] IoU metric to evaluate the segmentation (codes in the repo)
+- [ ] Experiment with different hyperparameters (thresholds, points for normal ...) 
+- [ ] Visualize normals (mayavi is good for this, example in the repo)
+- [ ] Visualize performance in table (recommend pandas) and graph (matplotlib)
 
 # Instance
 ![alt text](schemes/images/instance.png)
 
-- Start with synthetically generated data (in example)
-- Try dbscan to get the ids to understand the format
-- Look at the lanes_example.py for calculation of KNN in pytorch3d and smoothness loss.
-- Run example and compare it in Instance segmentation metric.
-- Initialize vectors from points and optimize them in pytorch to match values from PCA eigen vectors
-  - points from same id should have the same value
-  - optimize only angle as well (useful in future)
+- [ ] Start with synthetically generated data (in example)
+- [ ] Try dbscan to get the ids to understand the format
+- [ ] Look at the lanes_example.py for calculation of KNN in pytorch3d and smoothness loss.
+- [ ] Run example and compare it in Instance segmentation metric.
+- [ ] Initialize vectors from points and optimize them in pytorch to match values from PCA eigen vectors
+  - [ ] points from same id should have the same value
+  - [ ] optimize only angle as well (useful in future)
   
-- Visualize the vectors in the point cloud
-- Use real data and try the PCA from dbscan
-- Develope loss that respects the shape of lanes (we need to discuss this later)
-    - How to split bigger clusters to lanes?
+- [ ] Visualize the vectors in the point cloud
+- [ ] Use real data and try the PCA from dbscan
+- [ ] Develope loss that respects the shape of lanes (we need to discuss this later)
+    - [ ] How to split bigger clusters to lanes?
   
 # Lane direction vectors
-![alt text](schemes/images/direction_vectors.png)
+![alt text](schemes/images/instance_matching.png)
 
-- Generate toy samples of instance centers (matplotlib ginput for example)
-- Assign vector field to the points represented as torch tensors Idx x [vx,vy]
-- Use pytorch3d Nearest neighboor function to calculate chamfer distance (L_CD) between instance and closest instance to its vector
-- Optimize the vectors to minimize the chamfer distance and visualize output
-- Add smoothness loss (L_smooth) to make connected instance similar (the loss after that will converge but not to zero with both losses)
-- Make animation of the optimization at each iteration
-
+- [ ] Generate toy samples of instance centers (matplotlib ginput for example)
+- [ ] Assign vector field to the points represented as torch tensors Idx x [vx,vy]
+- [ ] Use pytorch3d Nearest neighboor function to calculate chamfer distance (L_CD) between instance and closest instance to its vector
+- [ ] Optimize the vectors to minimize the chamfer distance and visualize output
+- [ ] Add smoothness loss (L_smooth) to make connected instance similar (the loss after that will converge but not to zero with both losses)
+- [ ] Make animation of the optimization at each iteration
+- [ ] Use output from real data instances
+- [ ] Add pca loss from instance module to the solution
 
 ![alt text](schemes/images/lanes_method.png)
 
@@ -67,8 +68,9 @@
 - Compute in 2D after segmentation
 - Jupyter (Recommended for developing, then refactor to scripts)
 - Github Copilot (one month free trial)
-- pre-push (https://git-scm.com/book/en/v2/Customizing-Git-Git-Hooks) or bash script
-- coordinated refactor when needed
+- Pre-push (https://git-scm.com/book/en/v2/Customizing-Git-Git-Hooks) or bash script
+- Coordinated refactor when needed
+- Release version branch when outputs works end-to-end 
 
 # Server
 - predescribed packages
