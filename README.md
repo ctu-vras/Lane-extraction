@@ -14,6 +14,7 @@
 - [ ] Module class
 - [ ] Visuals
 - [ ] Klane dataset
+- [ ] Non-linear least square instead of optimizer
 
 # Segmentation
 ![alt text](schemes/images/segmentation.png)
@@ -44,12 +45,19 @@
   
 # Lane direction vectors
 ![alt text](schemes/images/direction_vectors.png)
-L_NN, L_Smooth
+
+- Generate toy samples of instance centers (matplotlib ginput for example)
+- Assign vector field to the points represented as torch tensors Idx x [vx,vy]
+- Use pytorch3d Nearest neighboor function to calculate chamfer distance (L_CD) between instance and closest instance to its vector
+- Optimize the vectors to minimize the chamfer distance and visualize output
+- Add smoothness loss (L_smooth) to make connected instance similar (the loss after that will converge but not to zero with both losses)
+- Make animation of the optimization at each iteration
+
 
 ![alt text](schemes/images/lanes_method.png)
 
 # Workflow
-- All in pytorch
+- All in pytorch, vectorized operations
 - All functions are most likely already done somewhere
   - KNN - pytorch3d
   - metrics - torchmetrics (https://github.com/Lightning-AI/torchmetrics)
