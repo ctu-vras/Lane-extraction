@@ -16,6 +16,12 @@
 - [ ] Klane dataset
 - [ ] Non-linear least square instead of optimizer
 
+# Starters
+- If you are not familiar with pytorch, go over these tutorials:
+  - [seznam](www.seznam.cz) 
+    - https://pytorch.org/tutorials/beginner/basics/tensorqs_tutorial.html 
+    - https://pytorch.org/tutorials/beginner/nn_tutorial.html
+    - it covers the basics of 
 # Segmentation
 ![alt text](schemes/images/segmentation.png)
 
