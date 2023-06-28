@@ -1,0 +1,7 @@
+# This is used as an interpreter on server, that is consistent with pytorch3d, jupyter and matplotlib visuals
+
+ml PyTorch3D/0.7.3-foss-2022a-CUDA-11.7.0
+ml matplotlib/3.5.2-foss-2022a
+ml JupyterLab
+
+python "$@"

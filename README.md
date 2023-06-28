@@ -55,6 +55,7 @@
 - [ ] Use output from real data instances
 - [ ] Add pca loss from instance module to the solution
 
+# Full pipeline so far
 ![alt text](schemes/images/lanes_method.png)
 
 # Workflow
@@ -72,20 +73,25 @@
 - Coordinated refactor when needed
 - Release version branch when outputs works end-to-end 
 
-# Server
-- predescribed packages
-- ssfhs
-- bashrc
-- Boruvka
-- pytorch3d
-- deprecated visuals?
+# Server Boruvka
+- Address: username@boruvka.felk.cvut.cz
+- Should have enough shared gpu cards
+  - **pyconfig** file is used for python environment on server as well as remote interpreter
+  - It should have everything included (torch, pytorch3d, torchmetrics, matplotlib, pandas, sklearn, scipy, numpy, jupyter, ...)
+    - if not, search via command "module spider package_name"
+  - Tunnel does not work for me, I set up the **sshfs** to see files from local computer and visualize in local
+  - Highly recommend estabilishing remote interpreter for bigger computations than toy examples 
+  - **~/.bashrc** is sourced everytime you connect through ssh, you can add aliases there or some convinient commands
+  - I have a script for "remote" and fluent point cloud visualization using pptk library, We will discuss that when you have problems with visuals from the server 
  
 # Data on drive 
-https://drive.google.com/drive/folders/1urwhi2SGGB3U7t3_JgcvFU1kCCE-ksuS?usp=sharing
+- let me know if access needed
+- Discuss between you how to structure data for the project to fit your workflow
+- Data: https://drive.google.com/drive/folders/1urwhi2SGGB3U7t3_JgcvFU1kCCE-ksuS?usp=sharing
 
 
 # Discord server
-https://discord.gg/wa4qwwANK
+- Link to discord: https://discord.gg/wa4qwwANK
 
 # brain dump 23.6. Valeo Meeting
 
