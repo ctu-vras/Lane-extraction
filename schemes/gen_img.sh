@@ -1,7 +1,7 @@
 #!/bin/bash
 
 for f in *.drawio; do
-    drawio -x -f png --scale 1.5 \
+    drawio -x -f png --scale 2.5 \
         -o images/${f%.*}.png $f
 done
 
