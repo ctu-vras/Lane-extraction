@@ -1,13 +1,13 @@
 # Lane-extraction
 
 
-| Person | Module | Extra Tasks | Notes | 
-|--------|:------:|------------:|------:|
-| Yana   |        |             |       |
-| Honza  |        |             |       |
-| Ondra  |        |             |       |
-| Martin |        |             |       |
-| Patrik |        |             |       |
+| Person |      Module       | Other Tasks | Notes | 
+|--------|:-----------------:|------------:|------:|
+| Yana   |  Init Framework   |             |       |
+| Honza  |   Segmentation    |             |       |
+| Ondra  |     Instance      |             |       |
+| Martin | Instance Matching |             |       |
+| Patrik |   Full Pipeline   |             |       |
 
 # TBD Tasks
 - [ ] Data
@@ -18,10 +18,52 @@
 
 # Starters
 - If you are not familiar with pytorch, go over these tutorials:
-  - [seznam](www.seznam.cz) 
-    - https://pytorch.org/tutorials/beginner/basics/tensorqs_tutorial.html 
-    - https://pytorch.org/tutorials/beginner/nn_tutorial.html
-    - it covers the basics of 
+  - It covers the basics of optimization with pytorch, that is what we will use
+  - Try it in Jupyter notebooks (it is really the most efficient way of scripting for data science)
+  - [Tensors](https://pytorch.org/tutorials/beginner/basics/tensorqs_tutorial.html)
+  - [Autograd](https://pytorch.org/tutorials/beginner/basics/autogradqs_tutorial.html)
+  - [Training](https://pytorch.org/tutorials/beginner/basics/optimization_tutorial.html)
+  - [Pytorch modules](https://pytorch.org/tutorials/beginner/nn_tutorial.html)
+
+# Workflow
+- We will estabilish this on the fly
+- When some work might be usefull to others, push it to repo in **common** package and let know on discord
+- All in pytorch, vectorized operations
+- All functions are most likely already done somewhere
+  - KNN - pytorch3d
+  - metrics - torchmetrics (https://github.com/Lightning-AI/torchmetrics)
+  - PCA - torch.svd
+  - visualization - matplotlib, mayavi
+    
+- Compute in 2D after segmentation
+- Jupyter (Recommended for developing, then refactor to scripts)
+- Github Copilot (one month free trial)
+- Coordinated refactor when needed
+- Release version branch when outputs works end-to-end 
+
+[//]: # (- Pre-push &#40;https://git-scm.com/book/en/v2/Customizing-Git-Git-Hooks&#41; or bash script)
+
+# GPU Server
+- Address: username@boruvka.felk.cvut.cz
+- Should have enough shared gpu cards
+  - **pyconfig** file is used for python environment on server as well as remote interpreter
+  - It should have everything included (torch, pytorch3d, torchmetrics, matplotlib, pandas, sklearn, scipy, numpy, jupyter, ...)
+    - if not, search via command "module spider package_name"
+  - Tunnel does not work for me, I set up the **sshfs** to see files from local computer and visualize in local
+  - Highly recommend estabilishing remote interpreter for bigger computations than toy examples 
+  - **~/.bashrc** is sourced everytime you connect through ssh, you can add aliases there or some convinient commands
+  - I have a script for "remote" and fluent point cloud visualization using pptk library, We will discuss that when you have problems with visuals from the server 
+ 
+# Data on drive 
+- let me know if access needed
+- Discuss between you how to structure data for the project to fit your workflow
+- Data: https://drive.google.com/drive/folders/1urwhi2SGGB3U7t3_JgcvFU1kCCE-ksuS?usp=sharing
+
+
+# Discord server
+- Link to discord: https://discord.gg/wa4qwwANK
+ 
+
 # Segmentation
 ![alt text](schemes/images/segmentation.png)
 
@@ -64,40 +106,7 @@
 # Full pipeline so far
 ![alt text](schemes/images/lanes_method.png)
 
-# Workflow
-- All in pytorch, vectorized operations
-- All functions are most likely already done somewhere
-  - KNN - pytorch3d
-  - metrics - torchmetrics (https://github.com/Lightning-AI/torchmetrics)
-  - PCA - torch.svd
-  - visualization - matplotlib, mayavi
-    
-- Compute in 2D after segmentation
-- Jupyter (Recommended for developing, then refactor to scripts)
-- Github Copilot (one month free trial)
-- Pre-push (https://git-scm.com/book/en/v2/Customizing-Git-Git-Hooks) or bash script
-- Coordinated refactor when needed
-- Release version branch when outputs works end-to-end 
 
-# Server Boruvka
-- Address: username@boruvka.felk.cvut.cz
-- Should have enough shared gpu cards
-  - **pyconfig** file is used for python environment on server as well as remote interpreter
-  - It should have everything included (torch, pytorch3d, torchmetrics, matplotlib, pandas, sklearn, scipy, numpy, jupyter, ...)
-    - if not, search via command "module spider package_name"
-  - Tunnel does not work for me, I set up the **sshfs** to see files from local computer and visualize in local
-  - Highly recommend estabilishing remote interpreter for bigger computations than toy examples 
-  - **~/.bashrc** is sourced everytime you connect through ssh, you can add aliases there or some convinient commands
-  - I have a script for "remote" and fluent point cloud visualization using pptk library, We will discuss that when you have problems with visuals from the server 
- 
-# Data on drive 
-- let me know if access needed
-- Discuss between you how to structure data for the project to fit your workflow
-- Data: https://drive.google.com/drive/folders/1urwhi2SGGB3U7t3_JgcvFU1kCCE-ksuS?usp=sharing
-
-
-# Discord server
-- Link to discord: https://discord.gg/wa4qwwANK
 
 # brain dump 23.6. Valeo Meeting
 
