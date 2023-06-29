@@ -3,8 +3,8 @@
 | Person |      Module       | Other Tasks | Notes | 
 |--------|:-----------------:|------------:|------:|
 | Yana   |  Init Framework   |             |       |
-| Honza  |   Segmentation    |             |       |
-| Ondra  |     Instance      |             |       |
+| Honza  |   Instance    |             |       |
+| Ondra  |    TBD      |             |       |
 | Martin | Instance Matching |             |       |
 | Patrik |   Full Pipeline   |             |       |
 
