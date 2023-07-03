@@ -1,12 +1,12 @@
 # Lane-extraction
 
-| Person |            Module            | Other Tasks | Notes | 
-|--------|:----------------------------:|------------:|------:|
-| Yana   | Segmentation, Init Framework |             |       |
-| Honza  |           Instance           |             |       |
-| Ondra  |             TBD              |             |       |
-| Martin |      Instance Matching       |             |       |
-| Patrik |        Full Pipeline         |             |       |
+| Person |                 Module                  | Other Tasks | Notes | 
+|--------|:---------------------------------------:|------------:|------:|
+| Yana   | Current Framework Results, Segmentation |             |       |
+| Honza  |                Instance                 |             |       |
+| Ondra  |                   TBD                   |             |       |
+| Martin |            Instance Matching            |             |       |
+| Patrik |              Full Pipeline              |             |       |
 
 # TBD Tasks
 - [ ] Data
@@ -25,8 +25,8 @@
   - [Pytorch modules](https://pytorch.org/tutorials/beginner/nn_tutorial.html)
 
 # Workflow
-- We will estabilish this on the fly
-- When some work might be usefull to others, push it to repo in **common** package and let know on discord
+- We will establish this on the fly
+- When some work might be useful to others, push it to repo in **common** package and let know on discord
 - All in pytorch, vectorized operations
 - All functions are most likely already done somewhere
   - KNN - [PyTorch3D](https://github.com/facebookresearch/pytorch3d)
