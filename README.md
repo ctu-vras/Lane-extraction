@@ -1,12 +1,12 @@
 # Lane-extraction
 
-| Person |      Module       | Other Tasks | Notes | 
-|--------|:-----------------:|------------:|------:|
-| Yana   |  Init Framework   |             |       |
-| Honza  |   Instance    |             |       |
-| Ondra  |    TBD      |             |       |
-| Martin | Instance Matching |             |       |
-| Patrik |   Full Pipeline   |             |       |
+| Person |            Module            | Other Tasks | Notes | 
+|--------|:----------------------------:|------------:|------:|
+| Yana   | Segmentation, Init Framework |             |       |
+| Honza  |           Instance           |             |       |
+| Ondra  |             TBD              |             |       |
+| Martin |      Instance Matching       |             |       |
+| Patrik |        Full Pipeline         |             |       |
 
 # TBD Tasks
 - [ ] Data
