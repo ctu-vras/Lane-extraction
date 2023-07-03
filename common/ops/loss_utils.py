@@ -69,7 +69,7 @@ def smoothness_loss(est_flow, NN_idx, loss_norm=1, mask=None):
 
 def mask_NN_by_dist(dist, nn_ind, max_radius):
     '''
-    :param dist:   
+    :param dist:
     :param nn_ind:
     :param max_radius:
     :return:
