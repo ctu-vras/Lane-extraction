@@ -35,7 +35,7 @@
   - visualization - matplotlib, mayavi
     
 - Compute in 2D after segmentation
-- Jupyter (Recommended for developing, then refactor to scripts)
+- Jupyter (Recommended for development, then automatically export to scripts)
 - Github Copilot (one month free trial)
 - Coordinated refactor when needed
 - Release version branch when outputs works end-to-end 
