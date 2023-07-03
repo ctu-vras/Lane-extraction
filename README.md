@@ -61,7 +61,7 @@
 
 
 # Discord server
-- Link to discord: https://discord.gg/wa4qwwANK
+- Link to discord: https://discord.gg/qvYaWnTm
  
 
 # Segmentation
