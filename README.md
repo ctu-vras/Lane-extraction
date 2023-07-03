@@ -29,8 +29,9 @@
 - When some work might be usefull to others, push it to repo in **common** package and let know on discord
 - All in pytorch, vectorized operations
 - All functions are most likely already done somewhere
-  - KNN - pytorch3d
-  - metrics - torchmetrics (https://github.com/Lightning-AI/torchmetrics)
+  - KNN - [PyTorch3D](https://github.com/facebookresearch/pytorch3d)
+    - Recommended to install from local clone (should be safest, sometimes it needs specific version of pytorch) 
+  - metrics - [torchmetrics](https://github.com/Lightning-AI/torchmetrics)
   - PCA - torch.svd
   - visualization - matplotlib, mayavi
     
