@@ -68,7 +68,12 @@ def smoothness_loss(est_flow, NN_idx, loss_norm=1, mask=None):
 
 
 def mask_NN_by_dist(dist, nn_ind, max_radius):
-    # todo refactor to loss utils
+    '''
+    :param dist:   
+    :param nn_ind:
+    :param max_radius:
+    :return:
+    '''
     tmp_idx = nn_ind[:, :, 0].unsqueeze(2).repeat(1, 1, nn_ind.shape[-1]).to(nn_ind.device)
     nn_ind[dist > max_radius] = tmp_idx[dist > max_radius]
 
