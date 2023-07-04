@@ -1,0 +1,8 @@
+cmake_minimum_required(VERSION 3.5 FATAL_ERROR)
+project(preprocessing)
+find_package(PCL 1.2 REQUIRED COMPONENTS common io)
+include_directories(${PCL_INCLUDE_DIRS})
+link_directories(${PCL_LIBRARY_DIRS})
+add_definitions(${PCL_DEFINITIONS})
+add_executable(preprocessing preprocessing.cpp)
+target_link_libraries(preprocessing pcl_common pcl_io pcl_filters pcl_segmentation pcl_search pcl_features pcl_sample_consensus)
