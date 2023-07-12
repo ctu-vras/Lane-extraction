@@ -1,6 +1,7 @@
 import numpy as np
 import pandas as pd
 import pickle
+import sys
 from pyntcloud import PyntCloud
 from sklearn.cluster import DBSCAN
 from sklearn.linear_model import RANSACRegressor
@@ -83,7 +84,7 @@ def extract_points(data, line_models, labels):
     return np.vstack(inlier_points), np.concatenate(new_labels, axis=0)
 
 def main():
-    filepath = "projection.pcd"
+    filepath = sys.argv[1]
     cloud = PyntCloud.from_file(filepath)
     data = cloud.points
     data_np = data.to_numpy()
