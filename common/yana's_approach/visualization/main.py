@@ -2,6 +2,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from pyntcloud import PyntCloud
 import pickle
+import sys
 
 import xml.etree.ElementTree as ET
 import xml.dom.minidom
@@ -135,7 +136,7 @@ def main():
     with open('line_fitting/data.pkl', 'rb') as f:
         all_lines = pickle.load(f)
 
-    filepath = 'projection.pcd'
+    filepath = sys.argv[1]
     cloud = PyntCloud.from_file(filepath)
     data = cloud.points.to_numpy()
     
