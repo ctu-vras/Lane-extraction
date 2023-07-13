@@ -98,7 +98,7 @@
 - [x] Assign vector field to the points represented as torch tensors Idx x [vx,vy]
 - [x] Use pytorch3d Nearest neighboor function to calculate chamfer distance (L_CD) between instance and closest instance to its vector
 - [x] Optimize the vectors to minimize the chamfer distance and visualize output
-- [ ] Add smoothness loss (L_smooth) to make connected instance similar (the loss after that will converge but not to zero with both losses)
+- [x] Add smoothness loss (L_smooth) to make connected instance similar (the loss after that will converge but not to zero with both losses)
 - [x] Make animation of the optimization at each iteration
 - [ ] Use output from real data instances
 - [ ] Add pca loss from instance module to the solution
