@@ -4,9 +4,20 @@ import pickle
 import sys
 import os
 from pyntcloud import PyntCloud
-from segmentation import segmentation_main
-from instances import instances_main
-from matching import matching_main
+#from segmentation import segmentation_main
+#from instances import instances_main
+from matching.instance_matching import matching_main
+
+
+def instances_main(point_cloud):
+    #dummy shoud be from import
+    pass
+
+
+def segmentation_main(point_cloud):
+    #dummy shoud be from import
+
+    pass
 
 
 def main():
@@ -22,18 +33,18 @@ def main():
     point_cloud['instances'] = None
     point_cloud['matching'] = None
     point_cloud['labels'] = None
-    run_segmantion = True
+    point_cloud['vectors'] = data_np
+    run_segmentation = True
     run_instances = True
     run_matching = True
-    if run_segmantion:
+    print("ok")
+    """if run_segmentation:
         try:
-            segmentation_np = segmentation_main(point_cloud)
-            if segmentation_np.shape[0] == point_cloud['data'].shape[0] and segmentation_np.dtype == np.bool:
-                point_cloud['segmentation'] = segmentation_np
+            segmentation_main(point_cloud) #data are saved inside point_cloud
+            if point_cloud['segmentation'].shape[0] == point_cloud['data'].shape[0]:
                 np.save('segmentation.npy', point_cloud['segmentation'])
             else:
-                print("Segmentation wrong shape or "
-                      "type")
+                print("Segmentation wrong shape or type")
                 point_cloud['segmentation'] = np.load('segmentation.npy')
         except:
             print("Segmentation failed")
@@ -42,23 +53,27 @@ def main():
         point_cloud['segmentation'] = np.load('segmentation.npy')
     if run_instances:
         try:
-            instances_np = instances_main(point_cloud)
-            if instances_np.shape[0] == point_cloud['data'].shape[0]:
-                point_cloud['instances'] = instances_np
+            instances_main(point_cloud)
+            if point_cloud['instances'].shape[0] == point_cloud['data'].shape[0] and point_cloud['vectors'] is not None:
                 np.save('instances.npy', point_cloud['instances'])
+                np.save('vectors.npy', point_cloud['vectors'])
             else:
                 print("Instances wrong shape")
                 point_cloud['instances'] = np.load('instances.npy')
+                point_cloud['vectors'] = np.load('vectors.npy')
         except:
             print("Instances failed")
             point_cloud['instances'] = np.load('instances.npy')
+            point_cloud['vectors'] = np.load('vectors.npy')
     else:
         point_cloud['instances'] = np.load('instances.npy')
+        point_cloud['vectors'] = np.load('vectors.npy')
+    """
     if run_matching:
         try:
-            matching_np = matching_main(point_cloud)
-            if matching_np.shape[0] == point_cloud['data'].shape[0]:
-                point_cloud['matching'] = matching_np
+            matching_main(point_cloud)
+            print(point_cloud['matching'].shape)
+            if point_cloud['matching'].shape[0] == point_cloud['data'].shape[0]:
                 np.save('matching.npy', point_cloud['matching'])
             else:
                 print("Matching wrong shape")
