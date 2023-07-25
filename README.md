@@ -45,6 +45,7 @@
 
 # GPU Server
 - Address: username@boruvka.felk.cvut.cz
+- Store to path: /datagrid/personal/vacekpa2  ; limit 500GB for whole folder
 - Should have enough shared gpu cards
   - **pyconfig** file is used for python environment on server as well as remote interpreter
   - It should have everything included (torch, pytorch3d, torchmetrics, matplotlib, pandas, sklearn, scipy, numpy, jupyter, ...)
