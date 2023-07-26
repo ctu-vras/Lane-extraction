@@ -75,6 +75,9 @@
 - [x] Experiment with different hyperparameters (thresholds, points for normal ...) 
 - [ ] Visualize normals (mayavi is good for this, example in the repo)
 - [ ] Visualize performance in table (recommend pandas) and graph (matplotlib)
+- [ ] Camera images - for lane markings?
+- [ ] Check statistics for annotation sequences - intensity histogram on labels
+- [ ] Cylinder3D waymo from Awet and finetune on Valeo dataset
 
 # Instance
 ![alt text](doc/images/instance.png)
