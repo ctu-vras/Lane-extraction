@@ -104,8 +104,8 @@
 - [x] Optimize the vectors to minimize the chamfer distance and visualize output
 - [x] Add smoothness loss (L_smooth) to make connected instance similar (the loss after that will converge but not to zero with both losses)
 - [x] Make animation of the optimization at each iteration
-- [ ] Use output from real data instances
-- [ ] Add pca loss from instance module to the solution
+- [x] Use output from real data instances
+- [x] Add pca loss from instance module to the solution
 
 # Full pipeline so far
 ![alt text](doc/images/lanes_method.png)
