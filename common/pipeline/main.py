@@ -22,18 +22,21 @@ def segmentation_main(point_cloud):
 
 def main():
     #path = sys.argv[1]
+    #server and load data accordingly
+    #config file to set what to load
     os.chdir("..")
     path = os.path.join(os.path.abspath(os.curdir), "yana's_approach/preprocessing_cpp/new_dataset/2023-01-17_12-15-18_1/projection.pcd")
     point_cloud = {}
     cloud = PyntCloud.from_file(path)
     data = cloud.points
     data_np = data.to_numpy()
-    point_cloud['data'] = data_np
-    point_cloud['segmentation'] = None
-    point_cloud['instances'] = None
-    point_cloud['matching'] = None
-    point_cloud['labels'] = None
-    point_cloud['vectors'] = data_np
+    point_cloud['data'] = data_np # N*7
+    #point_cloud['segmentation_mask'] = None # N*1 bool
+    #point_cloud['instances_mask'] = None # M*2 (bool,instances_id)
+    #point_cloud['matching_mask'] = None # M *1 int (instance id)
+    point_cloud['segmentation'] = None  # M*4 (x,y,z,frame_id)
+    point_cloud['instances'] = None  # L*3 (x,y,instances)
+    point_cloud['matching'] = None  # L *1 int (instance id)
     run_segmentation = True
     run_instances = True
     run_matching = True
@@ -83,8 +86,8 @@ def main():
             point_cloud['matching'] = np.load('matching.npy')
     else:
         point_cloud['matching'] = np.load('matching.npy')
-    #not sure how matching and xml should be measured
-    return point_cloud
+    #create final xml
+    return point_cloud # return filled dictionary
 
 if __name__ == "__main__":
     main()
