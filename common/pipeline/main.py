@@ -4,7 +4,7 @@ import pickle
 import sys
 import os
 from pyntcloud import PyntCloud
-#from segmentation import segmentation_main
+from segmentation.segmentation_pipeline import segmentation_main
 #from instances import instances_main
 from matching.instance_matching import matching_main
 
@@ -12,13 +12,6 @@ from matching.instance_matching import matching_main
 def instances_main(point_cloud):
     #dummy shoud be from import
     pass
-
-
-def segmentation_main(point_cloud):
-    #dummy shoud be from import
-
-    pass
-
 
 def main():
     #path = sys.argv[1]
@@ -31,7 +24,7 @@ def main():
     data = cloud.points
     data_np = data.to_numpy()
     point_cloud['data'] = data_np # N*7
-    #point_cloud['segmentation_mask'] = None # N*1 bool
+    point_cloud['segmentation_mask'] = None # N*1 bool
     #point_cloud['instances_mask'] = None # M*2 (bool,instances_id)
     #point_cloud['matching_mask'] = None # M *1 int (instance id)
     point_cloud['segmentation'] = None  # M*4 (x,y,z,frame_id)
@@ -41,7 +34,7 @@ def main():
     run_instances = True
     run_matching = True
     print("ok")
-    """if run_segmentation:
+    if run_segmentation:
         try:
             segmentation_main(point_cloud) #data are saved inside point_cloud
             if point_cloud['segmentation'].shape[0] == point_cloud['data'].shape[0]:
@@ -54,7 +47,8 @@ def main():
             point_cloud['segmentation'] = np.load('segmentation.npy')
     else:
         point_cloud['segmentation'] = np.load('segmentation.npy')
-    if run_instances:
+
+    """if run_instances:
         try:
             instances_main(point_cloud)
             if point_cloud['instances'].shape[0] == point_cloud['data'].shape[0] and point_cloud['vectors'] is not None:
