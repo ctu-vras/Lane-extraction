@@ -9,7 +9,7 @@ import os
 import re
 
 #TODO move to the config file
-device = 'cuda:0'
+device = 'cuda:1'
 server = True
 
 if not server:
@@ -26,16 +26,17 @@ def filter_normals(point_cloud:torch.Tensor,k_nn:int,angle_deg_tresh:float,ref_n
         point_cloud[:,:3].unsqueeze(0).float(),neighborhood_size=k_nn
     )
     eigen_values,eigen_vectors = knn_res
-    eigen_values.squeeze_(0).to(device)
-    eigen_vectors.squeeze_(0).to(device)
+    eigen_values = eigen_values.squeeze(0).to(device)
+    eigen_vectors = eigen_vectors.squeeze(0).to(device)
 
     #get normal vectors
     normals = eigen_vectors[ :, :, 0]
 
     #compute the reference angles
-    ref_normal.to(device)
+    ref_normal = ref_normal.to(device)
     dot_products = torch.matmul(normals,ref_normal)
     cosines = dot_products / (torch.linalg.norm(normals,dim=1) * torch.linalg.norm(ref_normal))
+    cosines = cosines.cpu()
     angles_deg = torch.rad2deg(torch.arccos(np.abs(cosines)))
 
     #get the valid mask
@@ -277,7 +278,7 @@ def pipeline(point_cloud:torch.Tensor,angle_deg_tresh:float):
 
 def pipeline_frames(point_cloud:torch.Tensor,min_frame:int,max_frame:int):
 
-    final_mask = torch.zeros_like(point_cloud[:,0],dtype=bool)
+    final_mask = torch.zeros_like(point_cloud[:,0],dtype=bool).to(device)
     final_mask_refined = final_mask.clone()
     print('mask initialized')
 
@@ -302,9 +303,10 @@ def segmentation_main(data_dict):
     min_frame = point_cloud[:,4].min().item()
     max_frame = point_cloud[:,4].max().item()
 
-    point_cloud = point_cloud.to(device)
+    #point_cloud = point_cloud.to(device)
     final_mask,_ = pipeline_frames(point_cloud,int(min_frame),int(max_frame))
     #temporary fix of intensity tresholding
+    final_mask = final_mask.cpu()
     final_mask[point_cloud[:,3] <= 110] = 0
 
     data_dict['segmentation_mask'] = final_mask
