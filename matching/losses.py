@@ -1,9 +1,8 @@
 #!/usr/bin/env python
-import os
-import torch
 import numpy as np
-from pytorch3d.ops import knn_points
+import torch
 from pytorch3d.loss import chamfer_distance
+from pytorch3d.ops import knn_points
 
 
 def calculate_chamfer_loss(centers_array, vectors_array, outreach_mask):

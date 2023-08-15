@@ -1,5 +1,6 @@
-import xml.etree.ElementTree as ET
 import xml.dom.minidom
+import xml.etree.ElementTree as ET
+
 
 def xml_result(all_lines,centers_array,g):
     attributes = ET.Element('attributes',

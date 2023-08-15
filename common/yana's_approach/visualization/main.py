@@ -1,11 +1,12 @@
+import pickle
+import sys
+import xml.dom.minidom
+import xml.etree.ElementTree as ET
+
 import matplotlib.pyplot as plt
 import numpy as np
 from pyntcloud import PyntCloud
-import pickle
-import sys
 
-import xml.etree.ElementTree as ET
-import xml.dom.minidom
 
 class Line:
  def __init__(self, coef, intercept, points, type_of_line):

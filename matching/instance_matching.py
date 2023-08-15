@@ -1,13 +1,8 @@
-import torch
-import numpy as np
-from pytorch3d.ops import knn_points
-from pytorch3d.loss import chamfer_distance
-import matplotlib.pyplot as plt
 from matching.losses import *
 import yaml
 
-from matching.export_lines import xml_result
 from matching.segmentation import Graph
+
 
 def matching_main(point_cloud):
     with open('config.yaml', "r") as f:

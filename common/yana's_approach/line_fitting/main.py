@@ -1,7 +1,9 @@
 import pickle
+
 import numpy as np
-from sklearn.linear_model import RANSACRegressor
 from scipy.spatial.distance import euclidean
+from sklearn.linear_model import RANSACRegressor
+
 
 class Line:
  def __init__(self, coef, intercept, points, type_of_line):

@@ -1,10 +1,12 @@
-import numpy as np
-import pandas as pd
 import pickle
 import sys
+
+import numpy as np
+import pandas as pd
 from pyntcloud import PyntCloud
 from sklearn.cluster import DBSCAN
 from sklearn.linear_model import RANSACRegressor
+
 
 def dbscan_clustering(data, eps=1, min_samples=2):
     clustering = DBSCAN(eps=eps, min_samples=min_samples).fit(data)

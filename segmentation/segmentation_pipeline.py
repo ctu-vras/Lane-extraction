@@ -1,12 +1,9 @@
-import torch
-from pytorch3d.ops import estimate_pointcloud_local_coord_frames
 import numpy as np
+import torch
 from jakteristics import compute_features
-from sklearn.linear_model import RANSACRegressor
-from pytorch3d.ops import estimate_pointcloud_local_coord_frames,ball_query
+from pytorch3d.ops import estimate_pointcloud_local_coord_frames, ball_query
 from skimage.filters import threshold_otsu
-import os
-import re
+from sklearn.linear_model import RANSACRegressor
 
 #TODO move to the config file
 device = 'cuda:1'

@@ -1,12 +1,11 @@
-import numpy as np
-import pandas as pd
-import pickle
-import sys
 import os
+
+import numpy as np
 from pyntcloud import PyntCloud
-from segmentation.segmentation_pipeline import segmentation_main
+
 # from instances import instances_main
 from matching.instance_matching import matching_main
+from segmentation.segmentation_pipeline import segmentation_main
 
 
 def instances_main(point_cloud):

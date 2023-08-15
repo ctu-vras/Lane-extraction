@@ -1,12 +1,9 @@
 import os.path
+import socket
 
+import matplotlib.pyplot as plt
 import numpy as np
 import torch
-import glob
-import matplotlib.pyplot as plt
-import sys
-import socket
-import time
 
 
 class FileWatcher():
