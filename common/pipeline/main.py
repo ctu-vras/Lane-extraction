@@ -19,12 +19,9 @@ def main():
     # config file to set what to load
 
     path = os.path.join(os.path.abspath(os.curdir),
-                        #"yana's_approach/preprocessing_cpp/new_dataset/2023-01-17_12-15-18_1/projection.pcd")
                         "common/data/LR1_local-001.pcd")
-
-    print(path)
     point_cloud = {}
-    print(os.path.exists(path))
+    print("Loading point cloud")
     cloud = PyntCloud.from_file(path)
     data = cloud.points
     data_np = data.to_numpy()
@@ -38,9 +35,9 @@ def main():
     run_segmentation = True
     run_instances = True
     run_matching = True
-    print("ok")
     if run_segmentation:
         #try:
+        print("segmentation start")
         segmentation_main(point_cloud)  # data are saved inside point_cloud
         if point_cloud['segmentation'] is not None:
             np.save('segmentation.npy', point_cloud['segmentation'])
