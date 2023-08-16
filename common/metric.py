@@ -1,8 +1,7 @@
 import numpy as np
-from scipy.sparse import coo_matrix
-import torch
 import pandas as pd
-
+import torch
+from scipy.sparse import coo_matrix
 
 
 class IOU(torch.nn.Module):
