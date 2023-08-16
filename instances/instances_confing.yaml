@@ -1,0 +1,49 @@
+server:
+  password: "janghe123"
+
+cuda:
+  gpu: 3                            # 0-7
+
+data:
+  operation: "cpu_test"        # show_pc, show_clusters, show_data, statistics, cpu_test
+  download_results: True
+  process_pc: False
+  names: ["test11-13", "test12-14", "test13-15", "test14-16"]#["test01", "test02", "test03", "test04", "test05", "test06", "test07", "test08", "test11", "test12", "test13", "test14", "test15", "test16", "test17"]
+  start_end: [11, 13]                 # [start, end]
+  visualize: False
+
+clustering:
+  methods: ["DBSCAN", "smooth"]     # ["smooth", "DBSCAN", "HDBSCAN", "small_clusters", "oscillation", "flow", "lock"]
+
+  # Smooth loss parameters
+  k: 100
+  max_radius: 0.5
+
+  # H/DBSCAN parameters
+  eps: 0.4
+  min_cluster_size: 1
+  min_samples: 1
+
+  # Small clusters loss parameters
+  min_points: 5
+
+  # Lock loss parameters
+  stability_threshold: 50 # = for how many iterations a cluster has to contain the same points to be considered stable
+
+  # Training parameters
+  epochs: 400
+  lr: 0.01
+
+filtering:
+  min_points: 200
+  eps_line_fine: 0.15
+  eps_line_coarse: 0.3
+  eps_curve_fine: 0.15
+  eps_curve_coarse: 0.35
+  inliers_percentage_threshold: 0.75
+  ransac_iterations: 1000
+  l: 0.1
+
+  # Parameters for the shortest path algorithm
+  base_max_jump: 0.2
+  max_jump_increase: 0.05
