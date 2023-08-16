@@ -36,7 +36,7 @@ def main():
     #point_cloud['matching_mask'] = None # M *1 int (instance id)
     point_cloud['segmentation'] = None  # M*4 (x,y,z,frame_id)
     point_cloud['instances'] = None  # L*3 (x,y,instances)
-    point_cloud['matching'] = None  # L *1 int (instance id)
+    point_cloud['matching'] = None  # L*1 int (instance id)
     run_segmentation = True
     run_instances = True
     run_matching = True
