@@ -2,9 +2,9 @@ import torch
 
 from pytorch3d.ops.knn import knn_points
 
-from instances_plot import *
-from instances_data_generating import *
-from instances_utils import *
+from instances.instances_plot import *
+from instances.instances_data_generating import *
+from instances.instances_utils import *
 
 from tqdm import tqdm
 
@@ -71,7 +71,7 @@ def get_clusters(pc: torch.Tensor, loss_names: [str] = None, save: bool = False,
     # Get the ground truth label masks if DBSCAN or HDBSCAN is used
     # + We can much better approximate the number of instances
     if "DBSCAN" in loss_names:
-        ground_truth_label_mask_DBSCAN = generate_instance_label_mask(pc.squeeze(), eps=eps, min_samples=min_samples,
+        ground_truth_label_mask_DBSCAN = generate_instance_label_mask(pc.squeeze(), eps=eps/3, min_samples=min_samples,
                                                                       method="DBSCAN", device=device)
         num_instances = ground_truth_label_mask_DBSCAN.shape[-1]
 

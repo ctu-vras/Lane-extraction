@@ -307,4 +307,5 @@ def segmentation_main(data_dict):
     final_mask[point_cloud[:,3] <= 110] = 0
 
     data_dict['segmentation_mask'] = final_mask
+    data_dict['segmentation'] = point_cloud[final_mask]
 

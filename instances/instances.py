@@ -1,7 +1,8 @@
+import torch
 import yaml
 
-from instances_clustering import *
-from instances_filtering import *
+from instances.instances_clustering import *
+from instances.instances_filtering import *
 
 
 def instances_main(point_cloud_dictionary: dict) -> dict:
@@ -25,9 +26,10 @@ def instances_main(point_cloud_dictionary: dict) -> dict:
 
     # Get only x, y, z coordinates
     segmented_pc = segmented_pc[:, :3]
+    segmented_pc = torch.from_numpy(segmented_pc)
 
     # Load config
-    config = yaml.load(open("instances_config.yaml", "r"), Loader=yaml.FullLoader)
+    config = yaml.load(open("instances/instances_config.yaml", "r"), Loader=yaml.FullLoader)
 
     # Port to GPU
     if torch.cuda.is_available():

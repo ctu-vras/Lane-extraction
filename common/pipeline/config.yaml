@@ -1,13 +1,13 @@
 RUN_PARTS:
   SEGMENTATION: True
   INSTANCES: True
-  Matching: True
+  MATCHING: True
 SAVE_NAMES:
-  SEGMENTATION: "segmentation.npy"
-  INSTANCES: "instances.npy"
-  Matching: "matching.npy"
+  SEGMENTATION: "segmentation.npz"
+  INSTANCES: "instances.npz"
+  MATCHING: "matching.npz"
 LOAD_NAMES:
-  SEGMENTATION: "segmentation.npy"
-  INSTANCES: "instances.npy"
-  Matching: "matching.npy"
+  SEGMENTATION: "segmentation.npz"
+  INSTANCES: "instances.npz"
+  MATCHING: "matching.npz"
 DATA_PATH: "common/data/LR1_local-001.pcd"
