@@ -1,11 +1,11 @@
 import os
-
 import numpy as np
+import torch
 import yaml
 from pyntcloud import PyntCloud
 
-from instances.instances import instances_main
-from matching.instance_matching import matching_main
+from instances.instances_pipeline import instances_main
+from matching.matching_pipeline import matching_main
 from segmentation.segmentation_pipeline import segmentation_main
 
 
@@ -14,17 +14,20 @@ def main():
     # path = sys.argv[1]
     # server and load data accordingly
     # config file to set what to load
+
     print("starting main")
     with open('common/pipeline/config.yaml', "r") as f:
         config = yaml.safe_load(f)
-    path = os.path.join(os.path.abspath(os.curdir), config['DATA_PATH'])
+    torch.cuda.set_device(config['CUDA_CARD'])
+    torch.cuda.empty_cache()
+    #path = os.path.join(os.path.abspath(os.curdir), config['DATA_PATH'])
     #print(path)
     point_cloud = {}
-    #print("Loading point cloud")
-    cloud = PyntCloud.from_file(path)
-    data = cloud.points
-    data_np = data.to_numpy()
-    point_cloud['data'] = data_np  # N*7
+    print("Loading point cloud")
+    #cloud = PyntCloud.from_file(path)
+    #data = cloud.points
+    #data_np = data.to_numpy()
+    #point_cloud['data'] = data_np  # N*7
     #print(point_cloud['data'].size*point_cloud['data'].itemsize/1000000000)
     #point_cloud['segmentation_mask'] = None  # N*1 bool
     # point_cloud['instances_mask'] = None # M*2 (bool,instances_id)
@@ -36,6 +39,7 @@ def main():
         #try:
         print("segmentation start")
         segmentation_main(point_cloud)  # data are saved inside point_cloud
+        print("segmentation done")
         if point_cloud['segmentation'] is not None:
             np.save(config['SAVE_NAMES']['SEGMENTATION'], point_cloud['segmentation'])
         else:
@@ -47,24 +51,22 @@ def main():
         #except Exception as e:
          #   print("Segmentation failed")
           #  print(e)
-        if os.path.exists(config['LOAD_NAMES']['SEGMENTATION']):
-            point_cloud['segmentation'] = np.load(config['LOAD_NAMES']['SEGMENTATION'])
-        else:
-           return -1
+        #if os.path.exists(config['LOAD_NAMES']['SEGMENTATION']):
+            #point_cloud['segmentation'] = np.load(config['LOAD_NAMES']['SEGMENTATION'])
+        #else:
+           #return -1
     else:
         if os.path.exists(config['LOAD_NAMES']['SEGMENTATION']):
             point_cloud['segmentation'] = np.load(config['LOAD_NAMES']['SEGMENTATION'])
         else:
             return -1
 
-    print("segmentation done")
-    print(point_cloud['segmentation'].shape)
-    print("Memory size of numpy array in bytes:",
-          point_cloud['segmentation'].size * point_cloud['segmentation'].itemsize/1000000000)
+
+    torch.cuda.empty_cache()
     if config['RUN_PARTS']['INSTANCES']:
         #try:
         print("Instances start")
-        instances_main(point_cloud)
+        instances_main(point_cloud,config['CUDA_CARD'])
         print("Instances done")
         if point_cloud['instances'] is not None:
             np.save(config['SAVE_NAMES']['INSTANCES'], point_cloud['instances'])
@@ -81,15 +83,16 @@ def main():
                 return -1"""
     else:
         if os.path.exists(config['LOAD_NAMES']['INSTANCES']):
+
             point_cloud['instances'] = np.load(config['LOAD_NAMES']['INSTANCES'])
         else:
             return -1
-
+    torch.cuda.empty_cache()
     if config['RUN_PARTS']['MATCHING']:
         print("Matching start")
-        matching_main(point_cloud)
+        matching_main(point_cloud,config['CUDA_CARD'])
         if point_cloud['matching'] is not None:
-            np.save(config['SAVE_NAMES']['MATCHING'], point_cloud['matching'])
+            np.savez(config['SAVE_NAMES']['MATCHING'], point_cloud['matching'])
         else:
             if os.path.exists(config['LOAD_NAMES']['MATCHING']):
                 point_cloud['matching'] = np.load(config['LOAD_NAMES']['MATCHING'])
@@ -107,6 +110,8 @@ def main():
         else:
             return -1
     # create final xml
+
+    torch.cuda.empty_cache()
     return point_cloud  # return filled dictionary
 
 

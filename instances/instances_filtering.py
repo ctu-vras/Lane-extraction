@@ -13,7 +13,7 @@ def filter_pc(pc: torch.Tensor, config: dict = None) -> torch.Tensor:
             point cloud and False for points that are not in the filtered point cloud
     """
     # Initialize mask
-    mask = torch.ones(pc.shape[0], dtype=torch.bool)
+    mask = torch.ones(pc.shape[0], dtype=torch.bool, device=pc.device)
 
     # Filter out points that belong to small clusters
     min_points = 50 if config is None else config["filtering"]["min_points"]
@@ -181,7 +181,7 @@ def filter_pc_clusters_along_curve(pc: torch.Tensor, eps: float = 0.5, keep_inli
     l = 0.01 if config is None else config["filtering"]["l"]    # interpolation step
 
     # Filter clusters
-    mask = torch.zeros(pc.shape[0], dtype=torch.bool)
+    mask = torch.zeros(pc.shape[0], dtype=torch.bool, device=pc.device)
     for label in unique_labels:
         # Get cluster mask
         cluster_mask = labels == label
@@ -257,7 +257,7 @@ def find_shortest_path(points: torch.tensor, start_point_idx: int, end_point_idx
     while True:
         # Initialize Dijkstra's algorithm
         # - Initialize distances (make them infinite except for the start point)
-        distances = torch.full((num_points,), float('inf'))
+        distances = torch.full((num_points,), float('inf'),device=points.device)
         distances[start_point_idx] = 0
 
         # - Initialize previous (make them -1 -> no previous point)

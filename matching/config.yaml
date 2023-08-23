@@ -7,4 +7,4 @@ first_iteration_num: 100
 second_iteration_num: 150
 third_iteration_num: 100
 case: "real"
-neighbours_num: 8
+neighbours_num: 3

@@ -5,40 +5,41 @@ from pytorch3d.loss import chamfer_distance
 from pytorch3d.ops import knn_points
 
 
-def calculate_chamfer_loss(centers_array, vectors_array, outreach_mask):
+def calculate_chamfer_loss(centers_array, vectors_array, outreach_mask,device):
     #print(outreach_mask)
-    sum_of_losses = torch.tensor(0.0)
+    sum_of_losses = torch.tensor(0.0,device=device)
     for i in range(vectors_array.shape[0]):
         if outreach_mask[i].item() is False:
             continue
         mask = np.ones(centers_array.shape[0], dtype=bool)
         mask[i] = False
         new_centers_array = centers_array[mask].clone().detach()
-        new_centers_array = new_centers_array.reshape(1, -1, 3)  # Reshape to (1, num_points, 3)
-        centers_array_i = (centers_array[i] + vectors_array[i]).reshape(1, -1, 3)
-        chamfer_loss, _ = chamfer_distance(centers_array_i, new_centers_array, single_directional=True)
-        sum_of_losses += chamfer_loss
+        new_centers_array = new_centers_array.reshape(1, -1, 2)  # Reshape to (1, num_points, 3)
+        centers_array_i = (centers_array[i] + vectors_array[i]).reshape(1, -1, 2)
+        #chamfer_loss, _ = chamfer_distance(centers_array_i, new_centers_array, single_directional=True)
+        chamfer_loss,_,_ = knn_points(centers_array_i,new_centers_array,K=1)
+        sum_of_losses += chamfer_loss[0][0][0]
     return sum_of_losses
 
 
-def calculate_differentiable_smoothness(centers_array, vectors_array, outreach_mask):
+def calculate_differentiable_smoothness(centers_array, vectors_array, outreach_mask,device):
     num_centers = centers_array.shape[0]
     vectors_number = vectors_array.shape[0]
-    indices = torch.zeros(vectors_number, 3, dtype=torch.int64)
+    indices = torch.zeros(vectors_number, 2, dtype=torch.int64, device=device)
     for i in range(vectors_number):
         if outreach_mask[i].item() is False:
             continue
         mask = np.ones(num_centers, dtype=bool)
         mask[i] = False
         new_centers_array = centers_array[mask].clone().detach()
-        new_centers_array = new_centers_array.reshape(1, -1, 3)
-        centers_array_i = (centers_array[i] + vectors_array[i]).reshape(1, -1, 3)
+        new_centers_array = new_centers_array.reshape(1, -1, 2)
+        centers_array_i = (centers_array[i] + vectors_array[i]).reshape(1, -1, 2)
         _, idx, _ = knn_points(centers_array_i, new_centers_array, K=2)
         idx = idx[0][0][0]
         if idx >= i:
             idx += 1
         indices[i, :] = idx
-    vec = torch.zeros(num_centers, 3)
+    vec = torch.zeros(num_centers, 2, dtype=torch.float32, device=device)
     vec = vec.scatter_reduce(dim=0, index=indices, src=vectors_array, reduce='mean', include_self=False)
     res = torch.nn.functional.mse_loss(vectors_array, vec[indices[:, 0]], reduction='sum')
     return res
@@ -48,13 +49,13 @@ def calculate_continuity(centers_array, vectors_array):
     num_centers = centers_array.shape[0]
     vectors_number = vectors_array.shape[0]
 
-    indices = torch.zeros(vectors_number, 3, dtype=torch.int64)
+    indices = torch.zeros(vectors_number, 2, dtype=torch.int64)
     for i in range(vectors_array.shape[0]):
         mask = np.ones(num_centers, dtype=bool)
         mask[i] = False
         new_centers_array = centers_array[mask].clone().detach()
-        new_centers_array = new_centers_array.reshape(1, -1, 3)
-        centers_array_i = (centers_array[i] + vectors_array[i]).reshape(1, -1, 3)
+        new_centers_array = new_centers_array.reshape(1, -1, 2)
+        centers_array_i = (centers_array[i] + vectors_array[i]).reshape(1, -1, 2)
         _, idx, _ = knn_points(centers_array_i, new_centers_array, K=2)
         idx = idx[0][0][0]
         if idx >= i:
@@ -65,17 +66,17 @@ def calculate_continuity(centers_array, vectors_array):
     return res
 
 
-def vector_exclusivity(centers_array, vectors_array, outreach_mask):
+def vector_exclusivity(centers_array, vectors_array, outreach_mask,device):
     num_centers = centers_array.shape[0]
     vectors_number = vectors_array.shape[0]
 
-    indices = torch.zeros(vectors_number, dtype=torch.int64)
+    indices = torch.zeros(vectors_number, dtype=torch.int64, device=device)
     for i in range(vectors_number):
         mask = np.ones(num_centers, dtype=bool)
         mask[i] = False
         new_centers_array = centers_array[mask].clone().detach()
-        new_centers_array = new_centers_array.reshape(1, -1, 3)
-        centers_array_i = (centers_array[i] + vectors_array[i]).reshape(1, -1, 3)
+        new_centers_array = new_centers_array.reshape(1, -1, 2)
+        centers_array_i = (centers_array[i] + vectors_array[i]).reshape(1, -1, 2)
         _, idx, _ = knn_points(centers_array_i, new_centers_array, K=1)
         idx = idx[0][0][0]
         if idx >= i:
@@ -100,16 +101,16 @@ def vector_exclusivity(centers_array, vectors_array, outreach_mask):
     return sum_of_losses
 
 
-def exclusivity_repulsion(centers_array, vectors_array, outreach_mask):
+def exclusivity_repulsion(centers_array, vectors_array, outreach_mask,device):
     num_centers = centers_array.shape[0]
     vectors_number = vectors_array.shape[0]
-    indices = torch.zeros(vectors_number, dtype=torch.int64)
+    indices = torch.zeros(vectors_number, dtype=torch.int64,device=device)
     for i in range(vectors_number):
         mask = np.ones(num_centers, dtype=bool)
         mask[i] = False
         new_centers_array = centers_array[mask].clone().detach()
-        new_centers_array = new_centers_array.reshape(1, -1, 3)
-        centers_array_i = (centers_array[i] + vectors_array[i]).reshape(1, -1, 3)
+        new_centers_array = new_centers_array.reshape(1, -1, 2)
+        centers_array_i = (centers_array[i] + vectors_array[i]).reshape(1, -1, 2)
         _, idx, _ = knn_points(centers_array_i, new_centers_array, K=1)
         idx = idx[0][0][0]
         if idx >= i:
@@ -162,8 +163,8 @@ def compute_multiplier(centers_array, vectors_array, knn_taken):
         mask = np.ones(num_centers, dtype=bool)
         mask[i] = False
         new_centers_array = centers_array[mask].clone().detach()
-        new_centers_array = new_centers_array.reshape(1, -1, 3)
-        centers_array_i = (centers_array[i] + vectors_array[i]).reshape(1, -1, 3)
+        new_centers_array = new_centers_array.reshape(1, -1, 2)
+        centers_array_i = (centers_array[i] + vectors_array[i]).reshape(1, -1, 2)
         dist, idx, _ = knn_points(centers_array_i, new_centers_array, K=knn_taken)
         mean_dist += dist[0][0][knn_taken - 1].item()
     mean_dist /= vectors_number
@@ -177,8 +178,8 @@ def find_closest_direction(padded_centers_array, padded_vectors_directions):
         mask = np.ones(padded_centers_array.shape[0], dtype=bool)
         mask[i] = False
         new_centers_array = padded_centers_array[mask].clone().detach()
-        new_centers_array = new_centers_array.reshape(1, -1, 3)
-        centers_array_i = (padded_centers_array[i] + padded_vectors_directions[i]).reshape(1, -1, 3)
+        new_centers_array = new_centers_array.reshape(1, -1, 2)
+        centers_array_i = (padded_centers_array[i] + padded_vectors_directions[i]).reshape(1, -1, 2)
         _, idx, _ = knn_points(centers_array_i, new_centers_array, K=1)
         neighbours = idx
 

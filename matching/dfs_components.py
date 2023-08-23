@@ -37,8 +37,8 @@ class Graph:
             mask = np.ones(num_centers, dtype=bool)
             mask[i] = False
             new_centers_array = padded_centers_array[mask].clone().detach()
-            new_centers_array = new_centers_array.reshape(1, -1, 3)
-            centers_array_i = (padded_centers_array[i] + padded_vectors_directions[i]).reshape(1, -1, 3)
+            new_centers_array = new_centers_array.reshape(1, -1, 2)
+            centers_array_i = (padded_centers_array[i] + padded_vectors_directions[i]).reshape(1, -1, 2)
             _, idx, _ = knn_points(centers_array_i, new_centers_array, K=1)
             idx = idx[0][0][0].item()
             if idx >= i:

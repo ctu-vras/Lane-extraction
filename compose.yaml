@@ -12,7 +12,7 @@ services:
     build: .
     image: marking/version:v2
     #volumes:
-       #- /home/komajz/PycharmProject/Lane-extraction/common/data:/common/data
+       #- /home/komajz/PycharmProjects/Lane-extraction/common/data:/common/data
 
 
       #context: .

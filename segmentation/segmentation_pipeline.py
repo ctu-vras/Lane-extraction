@@ -6,7 +6,7 @@ from skimage.filters import threshold_otsu
 from sklearn.linear_model import RANSACRegressor
 
 #TODO move to the config file
-device = 'cuda:1'
+device = 'cuda:3'
 server = True
 
 if not server:
@@ -293,7 +293,7 @@ def pipeline_frames(point_cloud:torch.Tensor,min_frame:int,max_frame:int):
     return final_mask,final_mask_refined
 
 
-def segmentation_main(data_dict):   
+def segmentation_main(data_dict):
 
     point_cloud = torch.from_numpy(data_dict['data']).float()
 
@@ -301,11 +301,11 @@ def segmentation_main(data_dict):
     max_frame = point_cloud[:,4].max().item()
 
     #point_cloud = point_cloud.to(device)
-    final_mask,_ = pipeline_frames(point_cloud,int(min_frame),int(max_frame))
+    final_mask,_ = pipeline_frames(point_cloud,int(min_frame),5)#int(max_frame))
     #temporary fix of intensity tresholding
     final_mask = final_mask.cpu()
     final_mask[point_cloud[:,3] <= 110] = 0
 
     data_dict['segmentation_mask'] = final_mask
-    data_dict['segmentation'] = point_cloud[final_mask]
+    data_dict['segmentation'] = point_cloud[final_mask].numpy()
 

@@ -5,7 +5,7 @@ from instances.instances_clustering import *
 from instances.instances_filtering import *
 
 
-def instances_main(point_cloud_dictionary: dict) -> dict:
+def instances_main(point_cloud_dictionary: dict,cuda_card) -> dict:
     """
     Main function for extracting information about instances from a point cloud.
     This function works on the data provided by the segmentation_main function - points of a point cloud that are
@@ -23,7 +23,8 @@ def instances_main(point_cloud_dictionary: dict) -> dict:
     """
     # Load input data
     segmented_pc = point_cloud_dictionary['segmentation']
-
+    #print(segmented_pc)
+    #segmented_pc = segmented_pc[segmented_pc[:,4]<30]
     # Get only x, y, z coordinates
     segmented_pc = segmented_pc[:, :3]
     segmented_pc = torch.from_numpy(segmented_pc)
@@ -34,14 +35,14 @@ def instances_main(point_cloud_dictionary: dict) -> dict:
     # Port to GPU
     if torch.cuda.is_available():
         # Select GPU
-        gpu = config["cuda"]["gpu"]
-        torch.cuda.set_device(gpu)
+        #gpu = config["cuda"]["gpu"]
+        torch.cuda.set_device(cuda_card)
 
         # Clear what's on GPU
         torch.cuda.empty_cache()
 
         # Port to GPU
-        device = torch.device("cuda")
+        device = cuda_card#torch.device("cuda")
         segmented_pc = segmented_pc.to(device)
     else:
         device = torch.device("cpu")
@@ -58,8 +59,9 @@ def instances_main(point_cloud_dictionary: dict) -> dict:
     pc_with_labels = torch.cat([segmented_pc, clusters.reshape(-1, 1)], dim=1).float()
 
     # Filter point cloud
+    pc_with_labels.to(device)
     filter_mask = filter_pc(pc_with_labels, config=config)
-    filtered_pc = pc_with_labels[filter_mask]
+    filtered_pc = pc_with_labels[filter_mask].cpu().numpy()
 
     # Save the results to the dictionary
     point_cloud_dictionary['instances'] = filtered_pc

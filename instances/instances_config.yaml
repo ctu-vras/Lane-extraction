@@ -2,7 +2,7 @@ server:
   password: "janghe123"
 
 cuda:
-  gpu: 3                            # 0-7
+  gpu: 1                            # 0-7
 
 data:
   operation: "cpu_test"        # show_pc, show_clusters, show_data, statistics, cpu_test
