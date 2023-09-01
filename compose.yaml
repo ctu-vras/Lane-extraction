@@ -10,7 +10,7 @@
 services:
   server:
     build: .
-    image: marking/version:v2
+    image: kominma3/valeo_images:marking
     #volumes:
        #- /home/komajz/PycharmProjects/Lane-extraction/common/data:/common/data
 

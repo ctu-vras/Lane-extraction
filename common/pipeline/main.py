@@ -20,14 +20,14 @@ def main():
         config = yaml.safe_load(f)
     torch.cuda.set_device(config['CUDA_CARD'])
     torch.cuda.empty_cache()
-    #path = os.path.join(os.path.abspath(os.curdir), config['DATA_PATH'])
-    #print(path)
+    path = os.path.join(os.path.abspath(os.curdir), config['DATA_PATH'])
+    print(path)
     point_cloud = {}
     print("Loading point cloud")
-    #cloud = PyntCloud.from_file(path)
-    #data = cloud.points
-    #data_np = data.to_numpy()
-    #point_cloud['data'] = data_np  # N*7
+    cloud = PyntCloud.from_file(path)
+    data = cloud.points
+    data_np = data.to_numpy()
+    point_cloud['data'] = data_np  # N*7
     #print(point_cloud['data'].size*point_cloud['data'].itemsize/1000000000)
     #point_cloud['segmentation_mask'] = None  # N*1 bool
     # point_cloud['instances_mask'] = None # M*2 (bool,instances_id)
@@ -39,6 +39,7 @@ def main():
         #try:
         print("segmentation start")
         segmentation_main(point_cloud)  # data are saved inside point_cloud
+        print(point_cloud['segmentation'].shape)
         print("segmentation done")
         if point_cloud['segmentation'] is not None:
             np.save(config['SAVE_NAMES']['SEGMENTATION'], point_cloud['segmentation'])
@@ -48,13 +49,13 @@ def main():
                 point_cloud['segmentation'] = np.load(config['LOAD_NAMES']['SEGMENTATION'])
             else:
                 return -1
-        #except Exception as e:
-         #   print("Segmentation failed")
-          #  print(e)
-        #if os.path.exists(config['LOAD_NAMES']['SEGMENTATION']):
-            #point_cloud['segmentation'] = np.load(config['LOAD_NAMES']['SEGMENTATION'])
-        #else:
-           #return -1
+        """except Exception as e:
+            print("Segmentation failed")
+            print(e)
+        if os.path.exists(config['LOAD_NAMES']['SEGMENTATION']):
+            point_cloud['segmentation'] = np.load(config['LOAD_NAMES']['SEGMENTATION'])
+        else:
+           return -1"""
     else:
         if os.path.exists(config['LOAD_NAMES']['SEGMENTATION']):
             point_cloud['segmentation'] = np.load(config['LOAD_NAMES']['SEGMENTATION'])
@@ -89,8 +90,10 @@ def main():
             return -1
     torch.cuda.empty_cache()
     if config['RUN_PARTS']['MATCHING']:
+        #try:
         print("Matching start")
         matching_main(point_cloud,config['CUDA_CARD'])
+        print("Matching done")
         if point_cloud['matching'] is not None:
             np.savez(config['SAVE_NAMES']['MATCHING'], point_cloud['matching'])
         else:

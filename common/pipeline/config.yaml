@@ -1,6 +1,6 @@
 RUN_PARTS:
-  SEGMENTATION: False
-  INSTANCES: False
+  SEGMENTATION: True
+  INSTANCES: True
   MATCHING: True
 SAVE_NAMES:
   SEGMENTATION: "segmentation.npy"
@@ -10,5 +10,5 @@ LOAD_NAMES:
   SEGMENTATION: "segmentation.npy"
   INSTANCES: "instances.npy"
   MATCHING: "matching.npy"
-DATA_PATH: "common/data/LR1_local-001.pcd"
-CUDA_CARD: 'cuda:3'
+DATA_PATH: "common/data/LR1_local.pcd"
+CUDA_CARD: 'cuda:0'
