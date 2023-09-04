@@ -9,7 +9,7 @@ import yaml
 from matching.dfs_components import Graph
 from sklearn.decomposition import PCA
 
-def matching_main(point_cloud, cuda_card):
+def matching_main(point_cloud, cuda_card,file_name,run_animation):
     with open('matching/config.yaml', "r") as f:
         config = yaml.safe_load(f)
     all_points = point_cloud['instances'].copy()
@@ -26,7 +26,6 @@ def matching_main(point_cloud, cuda_card):
         new_index +=1
     print(centers_array)
     print(vectors_directions)
-
     centers_array = torch.tensor(centers_array,dtype=torch.float32)
     optimized_directions = torch.tensor(vectors_directions,dtype=torch.float32)
     print(optimized_directions)
@@ -35,31 +34,29 @@ def matching_main(point_cloud, cuda_card):
         optimized_directions = optimized_directions.to(cuda_card)
     optimized_directions = torch.nn.functional.normalize(optimized_directions)
     multiplier = compute_multiplier(centers_array, optimized_directions, config['neighbours_num'])
-    #print(multiplier)
-    #multiplier = 5
     opposite_pca = compute_opposite_pca(optimized_directions)
     opposite_pca = opposite_pca.to(cuda_card)
     optimized_directions = optimized_directions * opposite_pca[:, None] * multiplier
     optimized_directions.requires_grad = True
     optimizer = torch.optim.SGD([optimized_directions], lr=0.02)
     outreach_mask = find_closest_direction(centers_array, optimized_directions)
-
-    fig = plt.figure()
-    ax = plt.axes()
-    shorten_centers = centers_array.clone().detach().cpu()
-    shorten_vectors = optimized_directions.clone().detach().cpu()
-    x = shorten_centers[:, 0] + shorten_vectors[:, 0]
-    y = shorten_centers[:, 1] + shorten_vectors[:, 1]
-    Q = ax.quiver(shorten_centers[:, 0], shorten_centers[:, 1], shorten_vectors[:, 0], shorten_vectors[:, 1],
-                  scale=1, color='g', angles='xy', scale_units='xy')
-    ax.scatter(x, y, c='b', lw=2)
-    x_from = shorten_centers[:, 0]
-    y_from = shorten_centers[:, 1]
-    ax.scatter(x_from, y_from, c='r', lw=2)
-    time_text = ax.text(0.05, 0.95, '', horizontalalignment='left', verticalalignment='top', transform=ax.transAxes)
-    time_text.set_text('hello')
-    # data = np.stack([x, y]).T
-    plt.savefig('matching/lines_first.png')
+    if run_animation:
+        fig = plt.figure()
+        ax = plt.axes()
+        shorten_centers = centers_array.clone().detach().cpu()
+        shorten_vectors = optimized_directions.clone().detach().cpu()
+        x = shorten_centers[:, 0] + shorten_vectors[:, 0]
+        y = shorten_centers[:, 1] + shorten_vectors[:, 1]
+        Q = ax.quiver(shorten_centers[:, 0], shorten_centers[:, 1], shorten_vectors[:, 0], shorten_vectors[:, 1],
+                      scale=1, color='g', angles='xy', scale_units='xy')
+        ax.scatter(x, y, c='b', lw=2)
+        x_from = shorten_centers[:, 0]
+        y_from = shorten_centers[:, 1]
+        ax.scatter(x_from, y_from, c='r', lw=2)
+        time_text = ax.text(0.05, 0.95, '', horizontalalignment='left', verticalalignment='top', transform=ax.transAxes)
+        time_text.set_text('hello')
+        # data = np.stack([x, y]).T
+        plt.savefig('matching/lines_first.png')
 
     chamfer_losses = torch.zeros(config['first_iteration_num']).detach()
     vector_smoothness_losses = torch.zeros(config['first_iteration_num']).detach()
@@ -102,24 +99,25 @@ def matching_main(point_cloud, cuda_card):
         time_text.set_text('time = %.1d' % i)
         # data = np.stack([x, y]).T
         return Q,
-    print("before ANIMATION")
-    anim = FuncAnimation(fig, animate, frames=config['first_iteration_num'], interval=200)
-    anim.save('animation.gif', writer='ffmpeg', fps=5)
-    print("after ANIMATION")
-    fig = plt.figure()
-    ax = plt.axes()
-    shorten_centers = centers_array.clone().detach().cpu()
-    shorten_vectors = optimized_directions.clone().detach().cpu()
-    x = shorten_centers[:, 0] + shorten_vectors[:, 0]
-    y = shorten_centers[:, 1] + shorten_vectors[:, 1]
-    Q = ax.quiver(shorten_centers[:, 0], shorten_centers[:, 1], shorten_vectors[:, 0], shorten_vectors[:, 1],
-                  scale=1, color='g', angles='xy', scale_units='xy')
-    ax.scatter(x, y, c='b', lw=2)
-    x_from = shorten_centers[:, 0]
-    y_from = shorten_centers[:, 1]
-    ax.scatter(x_from, y_from, c='r', lw=2)
-    # data = np.stack([x, y]).T
-    plt.savefig('matching/lines_middle.png')
+    if run_animation:
+        print("before ANIMATION")
+        anim = FuncAnimation(fig, animate, frames=config['first_iteration_num'], interval=200)
+        anim.save('animation.gif', writer='ffmpeg', fps=5)
+        print("after ANIMATION")
+        fig = plt.figure()
+        ax = plt.axes()
+        shorten_centers = centers_array.clone().detach().cpu()
+        shorten_vectors = optimized_directions.clone().detach().cpu()
+        x = shorten_centers[:, 0] + shorten_vectors[:, 0]
+        y = shorten_centers[:, 1] + shorten_vectors[:, 1]
+        Q = ax.quiver(shorten_centers[:, 0], shorten_centers[:, 1], shorten_vectors[:, 0], shorten_vectors[:, 1],
+                      scale=1, color='g', angles='xy', scale_units='xy')
+        ax.scatter(x, y, c='b', lw=2)
+        x_from = shorten_centers[:, 0]
+        y_from = shorten_centers[:, 1]
+        ax.scatter(x_from, y_from, c='r', lw=2)
+        # data = np.stack([x, y]).T
+        plt.savefig('matching/lines_middle.png')
 
     for j in range(config['second_iteration_num']):
         optimizer.zero_grad()
@@ -135,20 +133,20 @@ def matching_main(point_cloud, cuda_card):
     g.create_graph(centers_array, optimized_directions, outreach_mask)
     # add visualisation of coloured lines
     lines = g.DFS()
-    xml_result(lines,centers_array,g)
-
-    fig = plt.figure()
-    ax = plt.axes()
-    shorten_centers = centers_array.clone().detach().cpu()
-    shorten_vectors = optimized_directions.clone().detach().cpu()
-    x = shorten_centers[:, 0] +  shorten_vectors[:, 0]
-    y = shorten_centers[:, 1] +  shorten_vectors [:, 1]
-    Q = ax.quiver(shorten_centers[:, 0], shorten_centers[:, 1], shorten_vectors[:, 0], shorten_vectors[:, 1],
-                  scale=1, color='g', angles='xy', scale_units='xy')
-    ax.scatter(x, y, c='b', lw=2)
-    x_from = shorten_centers[:, 0]
-    y_from = shorten_centers[:, 1]
-    ax.scatter(x_from, y_from, c='r', lw=2)
-    #data = np.stack([x, y]).T
-    plt.savefig('matching/lines_final.png')
+    xml_result(lines,centers_array,file_name)
+    if run_animation:
+        fig = plt.figure()
+        ax = plt.axes()
+        shorten_centers = centers_array.clone().detach().cpu()
+        shorten_vectors = optimized_directions.clone().detach().cpu()
+        x = shorten_centers[:, 0] +  shorten_vectors[:, 0]
+        y = shorten_centers[:, 1] +  shorten_vectors [:, 1]
+        Q = ax.quiver(shorten_centers[:, 0], shorten_centers[:, 1], shorten_vectors[:, 0], shorten_vectors[:, 1],
+                      scale=1, color='g', angles='xy', scale_units='xy')
+        ax.scatter(x, y, c='b', lw=2)
+        x_from = shorten_centers[:, 0]
+        y_from = shorten_centers[:, 1]
+        ax.scatter(x_from, y_from, c='r', lw=2)
+        #data = np.stack([x, y]).T
+        plt.savefig('matching/lines_final.png')
     torch.cuda.empty_cache()

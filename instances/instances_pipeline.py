@@ -62,7 +62,7 @@ def instances_main(point_cloud_dictionary: dict,cuda_card) -> dict:
     pc_with_labels.to(device)
     filter_mask = filter_pc(pc_with_labels, config=config)
     filtered_pc = pc_with_labels[filter_mask].cpu().numpy()
-
+    #plot_point_cloud(segmented_pc,None)
     # Save the results to the dictionary
     point_cloud_dictionary['instances'] = filtered_pc
 

@@ -2,7 +2,7 @@ import xml.dom.minidom
 import xml.etree.ElementTree as ET
 
 
-def xml_result(all_lines,centers_array,g):
+def xml_result(all_lines,centers_array,file_name):
     attributes = ET.Element('attributes',
                 {'datfile': 'testing.dat',
                     'majorversion': '1',
@@ -37,19 +37,6 @@ def xml_result(all_lines,centers_array,g):
             ET.SubElement(coordinates, f'zp_{id_in_line}').text = '0'
             ET.SubElement(coordinates, f'ew{id_in_line}').text = '0'
             id_in_line+=1
-        """line_timestamp = ET.SubElement(line_position, 'line_timestamp',
-                        {'time': '1675850223743312',
-                            'frame': '1',
-                            'sampletime': '1675850223743312',
-                            'interpolationState': 'end'})
-        line_elem = ET.SubElement(line_timestamp, 'line')
-        line_geom = ET.SubElement(line_elem, 'line_geom')
-        ET.SubElement(line_geom, 'closed').text = 'false'
-        coordinates = ET.SubElement(line_geom, 'coordinates')
-        ET.SubElement(coordinates, f'xp_{0}').text = str(centers_array[other][0].item())
-        ET.SubElement(coordinates, f'yp_{0}').text = str(centers_array[other][1].item())
-        ET.SubElement(coordinates, f'zp_{0}').text = '0'
-        """
         id_line += 1
 
     # Generate the string representation of the XML
@@ -60,5 +47,5 @@ def xml_result(all_lines,centers_array,g):
     pretty_xml_str = dom.toprettyxml(indent="  ")
 
     # Save the XML in a file
-    with open('result.xml', 'wb') as f:
+    with open(file_name, 'wb') as f:
         f.write(pretty_xml_str.encode())

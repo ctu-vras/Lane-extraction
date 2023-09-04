@@ -1,44 +1,50 @@
 import os
 import numpy as np
 import torch
-import yaml
+#import yaml
 from pyntcloud import PyntCloud
 
 from instances.instances_pipeline import instances_main
 from matching.matching_pipeline import matching_main
 from segmentation.segmentation_pipeline import segmentation_main
-
-
+from ruamel.yaml import YAML
 
 def main():
     # path = sys.argv[1]
     # server and load data accordingly
     # config file to set what to load
 
-    print("starting main")
+    yaml = YAML()
+    yaml.default_flow_style = False
+
     with open('common/pipeline/config.yaml', "r") as f:
-        config = yaml.safe_load(f)
-    torch.cuda.set_device(config['CUDA_CARD'])
-    torch.cuda.empty_cache()
+        config = yaml.load(f)
+    if os.path.exists('source/in/config.yaml'):
+        with open('source/in/config.yaml', "r") as f:
+            outside_config = yaml.load(f)
+        for key in outside_config:
+            config[key] = outside_config[key]
+    if os.path.exists('source/out'):
+        with open('source/out/config.yaml', 'w') as yaml_output:
+            yaml.dump(config, yaml_output)
     path = os.path.join(os.path.abspath(os.curdir), config['DATA_PATH'])
-    print(path)
+
+    print("starting main")
     point_cloud = {}
     print("Loading point cloud")
     cloud = PyntCloud.from_file(path)
     data = cloud.points
     data_np = data.to_numpy()
+    torch.cuda.set_device(config['CUDA_CARD'])
+    torch.cuda.empty_cache()
     point_cloud['data'] = data_np  # N*7
-    #print(point_cloud['data'].size*point_cloud['data'].itemsize/1000000000)
-    #point_cloud['segmentation_mask'] = None  # N*1 bool
-    # point_cloud['instances_mask'] = None # M*2 (bool,instances_id)
-    # point_cloud['matching_mask'] = None # M *1 int (instance id)
     point_cloud['segmentation'] = None  # M*4 (x,y,z,frame_id)
     point_cloud['instances'] = None  # L*3 (x,y,instances)
     point_cloud['matching'] = None  # L*1 int (instance id)
     if config['RUN_PARTS']['SEGMENTATION']:
         #try:
         print("segmentation start")
-        segmentation_main(point_cloud)  # data are saved inside point_cloud
+        segmentation_main(point_cloud,config['ANIMATION'])  # data are saved inside point_cloud
         print(point_cloud['segmentation'].shape)
         print("segmentation done")
         if point_cloud['segmentation'] is not None:
@@ -92,10 +98,10 @@ def main():
     if config['RUN_PARTS']['MATCHING']:
         #try:
         print("Matching start")
-        matching_main(point_cloud,config['CUDA_CARD'])
+        matching_main(point_cloud,config['CUDA_CARD'],config['XML_FILE_NAME'],config['ANIMATION'])
         print("Matching done")
         if point_cloud['matching'] is not None:
-            np.savez(config['SAVE_NAMES']['MATCHING'], point_cloud['matching'])
+            np.save(config['SAVE_NAMES']['MATCHING'], point_cloud['matching'])
         else:
             if os.path.exists(config['LOAD_NAMES']['MATCHING']):
                 point_cloud['matching'] = np.load(config['LOAD_NAMES']['MATCHING'])

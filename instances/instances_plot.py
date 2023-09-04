@@ -24,7 +24,7 @@ def plot_point_cloud(pc: torch.tensor, principal_components: torch.tensor = None
     # Plot point cloud
     fig = plt.figure()
     ax = fig.add_subplot(111, projection='3d')
-
+    # remove 3 dimensions to plot 2d clusters
     # Check if the point cloud has labels (if it has, plot it with color)
     if pc.shape[1] == 4:
         colors = pc[:, 3]

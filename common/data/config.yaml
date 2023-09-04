@@ -1,0 +1,3 @@
+DATA_PATH: "source/in/LR1_local.pcd"
+CUDA_CARD: 'cuda:1'
+XML_FILE_NAME: "source/out/result.xml"
