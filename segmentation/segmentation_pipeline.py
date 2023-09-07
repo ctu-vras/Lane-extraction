@@ -302,7 +302,7 @@ def segmentation_main(data_dict,run_animations):
     max_frame = point_cloud[:,4].max().item()
 
     #point_cloud = point_cloud.to(device)
-    final_mask,_ = pipeline_frames(point_cloud,int(min_frame),5)#int(max_frame))
+    final_mask,_ = pipeline_frames(point_cloud,int(min_frame),20)#int(max_frame))
     #temporary fix of intensity tresholding
     final_mask = final_mask.cpu()
     final_mask[point_cloud[:,3] <= 110] = 0
