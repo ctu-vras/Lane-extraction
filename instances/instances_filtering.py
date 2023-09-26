@@ -1,7 +1,8 @@
 import torch
-import matplotlib.pyplot as plt
 import heapq
-from timeit import default_timer as timer
+import matplotlib.pyplot as plt
+
+from pytorch3d.ops import knn_points
 
 
 def filter_pc(pc: torch.Tensor, config: dict = None) -> torch.Tensor:
@@ -16,19 +17,23 @@ def filter_pc(pc: torch.Tensor, config: dict = None) -> torch.Tensor:
     mask = torch.ones(pc.shape[0], dtype=torch.bool, device=pc.device)
 
     # Filter out points that belong to small clusters
+    print("- Filtering small clusters")
     min_points = 50 if config is None else config["filtering"]["min_points"]
     mask[mask.clone()] = filter_pc_small_clusters(pc, min_points=min_points)
 
     # Filter out deviated points
+    print("- Filtering deviated points")
     per = 0.5 if config is None else config["filtering"]["inliers_percentage_threshold"]
     eps = 0.1 if config is None else config["filtering"]["eps_curve_coarse"]
     mask[mask.clone()] = filter_pc_clusters_along_curve(pc[mask], eps=eps, keep_inliers_only=True,
                                                         inliers_percentage_threshold=per, config=config)
 
     # Filter out points that belong to small clusters
+    print("- Filtering small clusters")
     mask[mask.clone()] = filter_pc_small_clusters(pc[mask], min_points=min_points)
 
     # Find lanes
+    print("- Filtering lanes")
     eps = 0.1 if config is None else config["filtering"]["eps_curve_fine"]
     mask[mask.clone()] = filter_pc_clusters_along_curve(pc[mask], eps=eps, keep_inliers_only=False,
                                                         inliers_percentage_threshold=per, config=config)
@@ -168,17 +173,17 @@ def filter_pc_clusters_along_curve(pc: torch.Tensor, eps: float = 0.5, keep_inli
     :param config: configuration dictionary
     :return: mask of the filtered point cloud (format: [num_points])
     """
-    # Extract clusters
-    # - Get labels
+    # Get all labels
     labels = pc[:, 3]
 
-    # - Get unique labels
+    # Get unique labels
     unique_labels = torch.unique(labels)
 
     # Define variables for the shortest path algorithm
     base_max_jump = 0.2 if config is None else config["filtering"]["base_max_jump"]
     max_jump_increase = 0.05 if config is None else config["filtering"]["max_jump_increase"]
     l = 0.01 if config is None else config["filtering"]["l"]    # interpolation step
+    downsample_max_points = 1000 if config is None else config["filtering"]["downsample_max_points"]
 
     # Filter clusters
     mask = torch.zeros(pc.shape[0], dtype=torch.bool, device=pc.device)
@@ -187,9 +192,14 @@ def filter_pc_clusters_along_curve(pc: torch.Tensor, eps: float = 0.5, keep_inli
         cluster_mask = labels == label
 
         # Get cluster
-        cluster = pc[cluster_mask]
+        original_cluster = pc[cluster_mask]
+
+        # Downsample the cluster
+        downsampling_mask = downsample_points(original_cluster, max_points=downsample_max_points)
+        cluster = original_cluster[downsampling_mask]
 
         # Create 2D cluster
+        original_cluster_2d = original_cluster[:, :2]
         cluster_2d = cluster[:, :2]
 
         # Shift the points so the center of mass is in the origin (minimize the numerical errors)
@@ -205,32 +215,106 @@ def filter_pc_clusters_along_curve(pc: torch.Tensor, eps: float = 0.5, keep_inli
         end_point_idx = max_dist_ind % dists.shape[0]
 
         # Find the shortest path between the two points
-        path, cost = find_shortest_path(cluster, start_point_idx, end_point_idx, base_max_jump=base_max_jump,
+        path, cost = find_shortest_path(cluster_2d, start_point_idx, end_point_idx, base_max_jump=base_max_jump,
                                         max_jump_increase=max_jump_increase)
+        path_points = cluster_2d[torch.tensor(path)]
 
         # Get inliers and outliers of the path
-        inlier_ind = get_path_inlier_indices(cluster_2d, path, eps=eps, l=l)
+        inlier_ind = get_path_inlier_indices(original_cluster_2d-center_of_mass, path_points, eps=eps, l=l)
 
         # # TODO: remove eventually (below)
         # # Visualize the result
-        # plt.scatter(cluster[:, 0], cluster[:, 1], color="black")
-        # plt.scatter(cluster[inlier_ind, 0], cluster[inlier_ind, 1], color="blue")
-        # plt.scatter(cluster[start_point_idx, 0], cluster[start_point_idx, 1], color='green')
-        # plt.scatter(cluster[end_point_idx, 0], cluster[end_point_idx, 1], color='green')
+        # original_cluster = original_cluster.cpu()
+        # cluster = cluster.cpu()
+        # inlier_ind = inlier_ind.cpu()
+        #
+        # plt.scatter(original_cluster[:, 0], original_cluster[:, 1], color="black")
+        # plt.scatter(cluster[:, 0], cluster[:, 1], color="violet")
+        # plt.scatter(original_cluster[inlier_ind, 0], original_cluster[inlier_ind, 1], color="blue")
         # plt.scatter(cluster[path, 0], cluster[path, 1], color='red')
         # plt.plot(cluster[path, 0], cluster[path, 1], color='red')
+        # plt.scatter(cluster[start_point_idx, 0], cluster[start_point_idx, 1], color='green')
+        # plt.scatter(cluster[end_point_idx, 0], cluster[end_point_idx, 1], color='green')
         # plt.show()
         # # TODO: remove eventually (above)
 
         # If the cluster has less than inliers_percentage_threshold % of its points close enough to the fitted line,
         # throw the cluster away
-        if torch.sum(inlier_ind) / cluster.shape[0] > inliers_percentage_threshold:
+        if torch.sum(inlier_ind) / original_cluster.shape[0] > inliers_percentage_threshold:
             if keep_inliers_only:
                 mask[cluster_mask] = inlier_ind
             else:
                 mask[cluster_mask] = True
 
     return mask
+
+
+def find_shortest_path_not_working(points: torch.tensor, start_point_idx: int, end_point_idx: int) -> torch.tensor:
+    """
+    Find the shortest path between the two given points using Dijkstra's algorithm. The cost of the path is the sum of
+    the distances between the points. The maximum jump cost (maximum distance between two points in the path) is
+    iteratively increased until a path is found.
+    :param points: point cloud (format: [num_points, 2] = [x, y])
+    :param start_point_idx: index of the first point
+    :param end_point_idx: index of the second point
+    :return: indices of the points in the shortest path
+    """
+    # Initialize maximum jump cost and number of points
+    num_points = points.shape[0]
+
+    # Calculate nearest neighbors for all points
+    dist, nearest_neighbors_indices, _ = knn_points(points.unsqueeze(0), points.unsqueeze(0), K=num_points)
+    nearest_neighbors_indices = nearest_neighbors_indices.squeeze(0)
+    nearest_neighbors_distances = dist.squeeze(0)
+
+    # Find the shortest path
+    # Initialize Dijkstra's algorithm
+    # - Initialize distances (make them infinite except for the start point)
+    distances = torch.full((num_points,), float('inf'), device=points.device)
+    distances[start_point_idx] = 0
+
+    # - Initialize previous (make them -1 -> no previous point)
+    previous = torch.full((num_points,), -1)
+
+    # - Initialize heap
+    heap = [(0, start_point_idx)]
+
+    # Run Dijkstra's algorithm
+    while heap:
+        # Get the point with the smallest distance
+        dist, current = heapq.heappop(heap)
+
+        # Ignore paths that are already longer then the current shortest path to the current point
+        if dist > distances[current]:
+            continue
+
+        # Calculate everything for all neighbors of the current point at once
+        # - Get costs to all neighbors (i.e. distances to all neighbors from all_distances variable)
+        costs = nearest_neighbors_distances[current]
+
+        # - Calculate the total costs to all neighbors
+        total_costs = dist + costs
+
+        # - Create an update mask
+        update = total_costs < distances[nearest_neighbors_indices][current]
+
+        # - Update the distances and previous points
+        distances[nearest_neighbors_indices[current][update]] = total_costs[update]
+        previous[nearest_neighbors_indices[current][update]] = current
+
+        # - Push the neighbors to the heap
+        for neighbor in nearest_neighbors_indices[current][update].flatten():
+            heapq.heappush(heap, (distances[neighbor], neighbor))
+
+    # Reconstruct the path
+    path = []
+    current = end_point_idx
+    while current != -1:
+        path.append(current)
+        current = previous[current]
+    path.reverse()
+
+    return path, distances[end_point_idx]
 
 
 def find_shortest_path(points: torch.tensor, start_point_idx: int, end_point_idx: int, base_max_jump: float = 0.2,
@@ -254,10 +338,12 @@ def find_shortest_path(points: torch.tensor, start_point_idx: int, end_point_idx
     all_distances = torch.cdist(points, points)
 
     # Find the shortest path (increase the maximum jump cost until a path is found)
+    counter = 0
     while True:
+        counter += 1
         # Initialize Dijkstra's algorithm
         # - Initialize distances (make them infinite except for the start point)
-        distances = torch.full((num_points,), float('inf'),device=points.device)
+        distances = torch.full((num_points,), float('inf'), device=points.device)
         distances[start_point_idx] = 0
 
         # - Initialize previous (make them -1 -> no previous point)
@@ -296,8 +382,15 @@ def find_shortest_path(points: torch.tensor, start_point_idx: int, end_point_idx
             for neighbor in torch.nonzero(neighbors & update).flatten():
                 heapq.heappush(heap, (total_costs[neighbor], neighbor))
 
+        # Increase the maximum the increment every 5 iterations
+        if counter % 5 == 0:
+            max_jump_increase *= 2
+
         # Increase the maximum jump cost
         max_jump_cost += max_jump_increase
+
+        if max_jump_cost > 30:
+            print()
 
         # Stop if the end point is reached (i.e. it has a previous point)
         if previous[end_point_idx] != -1:
@@ -314,34 +407,22 @@ def find_shortest_path(points: torch.tensor, start_point_idx: int, end_point_idx
     return path, distances[end_point_idx]
 
 
-def get_path_inlier_indices(points: torch.Tensor, path: list, eps: float = 1.0, l: float = 0.01) -> torch.Tensor:
+def get_path_inlier_indices(points: torch.Tensor, path_points: torch.Tensor, eps: float = 1.0,
+                            l: float = 0.01) -> torch.Tensor:
     """
     Get the inlier indices of a path.
     :param points: points to get the inliers and outliers from (format: [num_points, 2] = [x, y])
-    :param path: indices of path points (format: [num_path_points] = [point_idx])
+    :param path_points: path points (format: [num_path_points, 2] = [x, y])
     :param eps: epsilon for the distance
     :param l: interpolation step
     :return: inliers indices
     """
-    # Convert path to tensor
-    path = torch.tensor(path)
-
-    # Get path points
-    path_points = points[path]
-
     # Interpolate the path
-    # print(f"\n\nInterpolating path with {path_points.shape[0]} points")
-    start = timer()
     path_points = interpolate_path(path_points, l=l)
-    end = timer()
-    # print(f"Interpolation took {end - start} seconds")
 
     # Get the distance between each point and the interpolated path
-    start = timer()
     dists = torch.cdist(points, path_points)
     min_dists, _ = torch.min(dists, dim=1)
-    end = timer()
-    # print(f"Distance calculation took {end - start} seconds")
 
     # Get the inliers and outliers
     inliers_idx = min_dists <= eps
@@ -377,23 +458,78 @@ def interpolate_path(path_points: torch.Tensor, l: float = 0.01) -> torch.Tensor
     return interp_points
 
 
+def downsample_points(points: torch.Tensor, max_points: int = 1000) -> torch.Tensor:
+    """
+    Downsample the given points using random sampling.
+    :param points: points to downsample (format: [num_points, 2] = [x, y])
+    :param max_points: maximum number of points to keep
+    :return: mask of points to keep
+    """
+    # Get the number of points
+    num_points = points.shape[0]
+
+    # Downsample the points if there are too many
+    if num_points > max_points:
+        # Get the indices of the points to keep
+        point_indices = torch.randperm(num_points)[:max_points]
+    else:
+        point_indices = torch.arange(num_points)
+
+    return point_indices
+
+
 if __name__ == "__main__":
-    # Generate line data (noised)
-    a = 1
-    b = 0
-    c = 0
-    x = torch.linspace(-1, 1, 100)
-    y = a * x + b + torch.rand(100) * 2 - 1
-    z = torch.zeros(100)
-    labels = torch.zeros(60)
-    labels = torch.cat((labels, torch.ones(40)))
-    points = torch.stack((x, y, z, labels), dim=1)
+    from timeit import default_timer as timer
 
-    # Add outliers
-    filtered_points = filter_pc_small_clusters(points, min_points=50)
+    # Generate random points
+    original_num_points = 10000
+    original_points = torch.rand((original_num_points, 3))
 
-    # Plot
-    plt.plot(points[:, 0], points[:, 1], 'o', c='b')
-    plt.plot(filtered_points[:, 0], filtered_points[:, 1], 'o', c='r')
-    plt.plot(x, a*x+b, 'r')
-    plt.show()
+    # # Downsample points
+    # indices = downsample_points(original_points)
+    # points = original_points[indices]
+    # num_points = points.shape[0]
+    #
+    # start = timer()
+    # # Find the most distant points
+    # distances = torch.cdist(points, points)
+    # max_dist = torch.max(distances)
+    # max_dist_idx = torch.argmax(distances)
+    # start_point_idx = max_dist_idx // num_points
+    # end_point_idx = max_dist_idx % num_points
+    #
+    # # Find the shortest path
+    # path, cost = find_shortest_path(points, start_point_idx=start_point_idx, end_point_idx=end_point_idx)
+    # end = timer()
+    #
+    # # Find the most distant original points
+    # start1 = timer()
+    # distances1 = torch.cdist(original_points, original_points)
+    # max_dist1 = torch.max(distances1)
+    # max_dist_idx1 = torch.argmax(distances1)
+    # start_point_idx1 = max_dist_idx1 // original_num_points
+    # end_point_idx1 = max_dist_idx1 % original_num_points
+    #
+    # # Find the shortest path from the original points
+    # path1, cost1 = find_shortest_path(original_points, start_point_idx=start_point_idx1, end_point_idx=end_point_idx1)
+    # end1 = timer()
+    #
+    # print("Without downsampling: ", end1 - start1)
+    # print("With downsampling: ", end - start)
+    #
+    # # Plot
+    # plt.scatter(original_points[:, 0], original_points[:, 1], c='black')
+    # plt.scatter(points[:, 0], points[:, 1], c='b')
+    # plt.scatter(points[start_point_idx, 0], points[start_point_idx, 1], c='g')
+    # plt.scatter(points[end_point_idx, 0], points[end_point_idx, 1], c='r')
+    # plt.scatter(original_points[start_point_idx1, 0], original_points[start_point_idx1, 1], c='g')
+    # plt.scatter(original_points[end_point_idx1, 0], original_points[end_point_idx1, 1], c='r')
+    # plt.plot(points[path, 0], points[path, 1], c='r')
+    # plt.plot(original_points[path1, 0], original_points[path1, 1], c='g')
+    # plt.show()
+
+    # Add label 0 to the points
+    original_points = torch.cat((original_points, torch.zeros((original_num_points, 1))), dim=1)
+    filter_pc_clusters_along_curve(original_points)
+
+

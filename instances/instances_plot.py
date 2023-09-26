@@ -107,8 +107,6 @@ def plot_point_cloud(pc: torch.tensor, principal_components: torch.tensor = None
     # Show plot
     plt.show()
 
-    return
-
 
 def plot_loss(losses: [list], loss_labels: [str] = None) -> None:
     """

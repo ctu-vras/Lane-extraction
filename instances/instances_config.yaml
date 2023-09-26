@@ -1,16 +1,15 @@
-server:
-  password: "janghe123"
-
 cuda:
   gpu: 1                            # 0-7
 
 data:
-  operation: "cpu_test"        # show_pc, show_clusters, show_data, statistics, cpu_test
+  operation: "show_data"        # show_pc, show_clusters, show_data, statistics, cpu_test
   download_results: True
   process_pc: False
-  names: ["test11-13", "test12-14", "test13-15", "test14-16"]#["test01", "test02", "test03", "test04", "test05", "test06", "test07", "test08", "test11", "test12", "test13", "test14", "test15", "test16", "test17"]
+  names: ["test11-13"] #, "test12-14", "test13-15", "test14-16"]#["test01", "test02", "test03", "test04", "test05", "test06", "test07", "test08", "test11", "test12", "test13", "test14", "test15", "test16", "test17"]
   start_end: [11, 13]                 # [start, end]
   visualize: False
+  max_frames: 20
+  min_frames: 15
 
 clustering:
   methods: ["DBSCAN", "smooth"]     # ["smooth", "DBSCAN", "HDBSCAN", "small_clusters", "oscillation", "flow", "lock"]
@@ -43,6 +42,7 @@ filtering:
   inliers_percentage_threshold: 0.75
   ransac_iterations: 1000
   l: 0.1
+  downsample_max_points: 500
 
   # Parameters for the shortest path algorithm
   base_max_jump: 0.2
