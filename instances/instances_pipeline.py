@@ -28,8 +28,8 @@ def instances_main(point_cloud_dictionary: dict, cuda_card: str) -> dict:
     print("-------------------------------------------------")
 
     # Load config
-    # config = yaml.load(open("instances/instances_config.yaml", "r"), Loader=yaml.FullLoader)
-    config = yaml.load(open("instances_config.yaml", "r"), Loader=yaml.FullLoader)
+    config = yaml.load(open("instances/instances_config.yaml", "r"), Loader=yaml.FullLoader)
+    #config = yaml.load(open("instances_config.yaml", "r"), Loader=yaml.FullLoader)
 
     # Load input data
     original_segmented_pc = point_cloud_dictionary['segmentation']
