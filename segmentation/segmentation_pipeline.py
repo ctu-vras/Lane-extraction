@@ -4,9 +4,10 @@ from jakteristics import compute_features
 from pytorch3d.ops import estimate_pointcloud_local_coord_frames, ball_query
 from skimage.filters import threshold_otsu
 from sklearn.linear_model import RANSACRegressor
+from segmentation.plot_segmentation import visualize_points
 
 #TODO move to the config file
-device = 'cuda:3'
+device = 'cuda:0'
 server = True
 
 if not server:
@@ -293,7 +294,7 @@ def pipeline_frames(point_cloud:torch.Tensor,min_frame:int,max_frame:int):
     return final_mask,final_mask_refined
 
 
-def segmentation_main(data_dict):
+def segmentation_main(data_dict,run_animations):
 
     point_cloud = torch.from_numpy(data_dict['data']).float()
 
@@ -301,11 +302,12 @@ def segmentation_main(data_dict):
     max_frame = point_cloud[:,4].max().item()
 
     #point_cloud = point_cloud.to(device)
-    final_mask,_ = pipeline_frames(point_cloud,int(min_frame),5)#int(max_frame))
+    final_mask,_ = pipeline_frames(point_cloud,int(min_frame),20)#int(max_frame))
     #temporary fix of intensity tresholding
     final_mask = final_mask.cpu()
     final_mask[point_cloud[:,3] <= 110] = 0
-
+    if run_animations:
+        visualize_points(point_cloud[point_cloud[:,4]<5].cpu().numpy(),point_cloud[final_mask,:].cpu().numpy())
     data_dict['segmentation_mask'] = final_mask
     data_dict['segmentation'] = point_cloud[final_mask].numpy()
 

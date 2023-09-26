@@ -1,3 +1,5 @@
 pyntcloud
 PyYAML
 jakteristics
+scikit-image
+ruamel.yaml

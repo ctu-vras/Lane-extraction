@@ -30,7 +30,7 @@
 **/obj
 **/secrets.dev.yaml
 **/values.dev.yaml
-#common/data
+common/data
 common/data/*
 LICENSE
 README.md

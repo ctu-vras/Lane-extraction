@@ -4,6 +4,7 @@ import numpy as np
 from pytorch3d.ops import knn_points
 
 
+# simple class to find connected components in graph
 class Graph:
     def __init__(self):
         self.graph = defaultdict(list)
