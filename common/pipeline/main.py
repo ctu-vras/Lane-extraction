@@ -13,7 +13,7 @@ def main():
     # load config from yaml inside project
     yaml = YAML()
     yaml.default_flow_style = False
-    with open('common/pipeline/config.yaml', "r") as f:
+    with open('./common/pipeline/config.yaml', "r") as f:
         config = yaml.load(f)
     # load config from yaml if there is one mounted from docker this config will
     #overwrite all properties that are same as the one inside the project
@@ -34,10 +34,11 @@ def main():
     #load point cloud from file
     if config['RUN_PARTS']['SEGMENTATION']:
         print("Loading point cloud")
-        cloud = PyntCloud.from_file(path)
+        '''cloud = PyntCloud.from_file(path)
         data = cloud.points
         data_np = data.to_numpy()
-        point_cloud['data'] = data_np
+        point_cloud['data'] = data_np'''
+        point_cloud['data'] = np.load(path)['data']
     #clear GPU before starting
     torch.cuda.set_device(config['CUDA_CARD'])
     torch.cuda.empty_cache()
@@ -50,7 +51,7 @@ def main():
         #try:
         print("segmentation start")
         #start segmentation that will save result into dictionary
-        segmentation_main(point_cloud,config['ANIMATION'])  # data are saved inside point_cloud
+        segmentation_main(point_cloud, config)  # data are saved inside point_cloud
         print("segmentation done")
         #save segmentation if successful
         if point_cloud['segmentation'] is not None:

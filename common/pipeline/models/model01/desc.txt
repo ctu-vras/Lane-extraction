@@ -1,0 +1,15 @@
+
+training sequences:
+    0807, 0802, 1806, 1804, 0803, 0805, 0800, 1801, 1803
+validation sequences:
+    1805, 1802
+testing sequences:
+    1800, 0801, 0808
+
+validation lane mark IoU: 78%
+testing lane mark IoU: 69%
+
+- used augmentations: bending, rotation, scaling, flipping, intensity shifting, uniform occupancy intensity jitter
+
+link: https://drive.google.com/drive/folders/1s1-Igj0lcaDSVFdzA07cyQuk2QjqOjdB?usp=sharing
+
