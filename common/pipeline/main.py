@@ -4,9 +4,11 @@ import torch
 #import yaml
 from pyntcloud import PyntCloud
 
+from segmentation.segmentation_pipeline import segmentation_main
 from instances.instances_pipeline import instances_main
 from matching.matching_pipeline import matching_main
-from segmentation.segmentation_pipeline import segmentation_main
+
+
 from ruamel.yaml import YAML
 
 def main():
@@ -34,11 +36,10 @@ def main():
     #load point cloud from file
     if config['RUN_PARTS']['SEGMENTATION']:
         print("Loading point cloud")
-        '''cloud = PyntCloud.from_file(path)
+        cloud = PyntCloud.from_file(path)
         data = cloud.points
         data_np = data.to_numpy()
-        point_cloud['data'] = data_np'''
-        point_cloud['data'] = np.load(path)['data']
+        point_cloud['data'] = data_np
     #clear GPU before starting
     torch.cuda.set_device(config['CUDA_CARD'])
     torch.cuda.empty_cache()

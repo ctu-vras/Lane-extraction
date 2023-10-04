@@ -20,6 +20,7 @@ def segmentation_main(data_dict, config):
     if config['MODEL_RETURN_UPSAMPLED']:
         # using upsampled mask --> mask compatible with original pointcloud
         final_mask = model_results.astype(bool)
+        final_mask = np.logical_and(final_mask, point_cloud[:, 3] >= config['POSTPROCESSING_INTENSITY_TRESH'])
         data_dict['segmentation_mask'] = final_mask
         data_dict['segmentation'] = point_cloud[final_mask]
     else:
