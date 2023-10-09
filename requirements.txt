@@ -3,3 +3,5 @@ PyYAML
 jakteristics
 scikit-image
 ruamel.yaml
+strictyaml
+
