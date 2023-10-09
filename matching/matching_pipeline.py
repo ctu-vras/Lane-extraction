@@ -14,15 +14,15 @@ def matching_main(point_cloud, cuda_card, file_name, run_animation):
         config = yaml.safe_load(f)
     all_points = point_cloud['instances'].copy()
     # shift all instances to be from 0 to number of instances
-    clusters_count = np.unique(all_points[:, 3]).shape[0]
+    clusters_count = np.unique(all_points[:, 2]).shape[0]
     centers_array = np.zeros((clusters_count, 2))
     vectors_directions = np.zeros((clusters_count, 2))
     new_index = 0
     # for each cluster find center and direction using mean and PCA
-    for i in np.unique(all_points[:, 3]):
-        centers_array[new_index, :] = np.mean(all_points[all_points[:, 3] == i, :2], axis=0)
+    for i in np.unique(all_points[:, 2]):
+        centers_array[new_index, :] = np.mean(all_points[all_points[:, 2] == i, :2], axis=0)
         pca = PCA(n_components=1)
-        pca.fit(all_points[all_points[:, 3] == i, :2])
+        pca.fit(all_points[all_points[:, 2] == i, :2])
         vectors_directions[new_index] = pca.components_
         new_index += 1
     print(centers_array)
@@ -49,7 +49,7 @@ def matching_main(point_cloud, cuda_card, file_name, run_animation):
     optimized_directions.requires_grad = True
     optimizer = torch.optim.SGD([optimized_directions], lr=0.02)
     # masks last points to not include them in optimization
-    outreach_mask = find_closest_direction(centers_array, optimized_directions)
+    outreach_mask = find_closest_direction(centers_array, optimized_directions,device=cuda_card)
     print(outreach_mask)
     # create image of before learing
     if run_animation:

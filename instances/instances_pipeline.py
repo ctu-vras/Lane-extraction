@@ -33,7 +33,7 @@ def instances_main(point_cloud_dictionary: dict, cuda_card: str) -> dict:
 
     # Load input data
     original_segmented_pc = point_cloud_dictionary['segmentation']
-
+    original_segmented_pc = torch.tensor(original_segmented_pc, dtype=torch.float32)
     # Get all provided frames
     frames = torch.unique(original_segmented_pc[:, 3])
 
@@ -66,6 +66,7 @@ def instances_main(point_cloud_dictionary: dict, cuda_card: str) -> dict:
 
     # Process each group of frames separately
     for i, frame_group in enumerate(frame_groups):
+        torch.cuda.empty_cache()
         print(f"- Processing group {i + 1} out of {len(frame_groups)}")
         # Get only points from the current group of frames
         mask = torch.zeros(original_segmented_pc.shape[0], dtype=torch.bool)
@@ -113,6 +114,7 @@ def instances_main(point_cloud_dictionary: dict, cuda_card: str) -> dict:
         complete_filtered_pc.append(filtered_pc)
         print("...finished...")
         print("-----------------------------------------------")
+        torch.cuda.empty_cache()
 
     # Convert the list of tensors to one tensor
     complete_filtered_pc = torch.cat(complete_filtered_pc, dim=0)
@@ -124,9 +126,8 @@ def instances_main(point_cloud_dictionary: dict, cuda_card: str) -> dict:
     # Group instances
     filtered_pc = group_instances(complete_filtered_pc)
     print("...finished...")
-
     # Save the results to the dictionary
-    point_cloud_dictionary['instances'] = filtered_pc
+    point_cloud_dictionary['instances'] = filtered_pc.numpy()
 
     # Release GPU memory
     if torch.cuda.is_available():
