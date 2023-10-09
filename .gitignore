@@ -1,4 +1,4 @@
 .idea
-.png
-.gid
-.pcd
+*.png
+*.gif
+*.pcd
