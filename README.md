@@ -1,14 +1,8 @@
 # Lane-extraction
 
-| Person |                 Module                  | Other Tasks | Notes | 
-|--------|:---------------------------------------:|------------:|------:|
-| Yana   | Current Framework Results, Segmentation |             |       |
-| Honza  |                Instance                 |             |       |
-| Ondra  |                   TBD                   |             |       |
-| Martin |            Instance Matching            |             |       |
-| Patrik |              Full Pipeline              |             |       |
+# Tickets
 
-# TBD Tasks
+<!-- # TBD Tasks
 - [ ] Data
 - [ ] Module class
 - [ ] Visuals
@@ -129,3 +123,4 @@
 - metrika na urovni polyline jako hlavni pro projekt
 - metrika: navrhnout polylines, ale drzet se modularnich zatim
 - Release version - pustit v ramci velke ulohy
+ -->
