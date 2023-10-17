@@ -1,131 +1,83 @@
 # Lane-extraction
 
-| Person |                 Module                  | Other Tasks | Notes | 
-|--------|:---------------------------------------:|------------:|------:|
-| Yana   | Current Framework Results, Segmentation |             |       |
-| Honza  |                Instance                 |             |       |
-| Ondra  |                   TBD                   |             |       |
-| Martin |            Instance Matching            |             |       |
-| Patrik |              Full Pipeline              |             |       |
+[//]: # (## Ticket Structure)
 
-# TBD Tasks
-- [ ] Data
-- [ ] Module class
-- [ ] Visuals
-- [ ] Klane dataset
-- [ ] Non-linear least square instead of optimizer
+[//]: # (    - General:)
 
-# Starters
-- If you are not familiar with pytorch, go over these tutorials:
-  - It covers the basics of optimization with pytorch, that is what we will use
-  - Try it in Jupyter notebooks (it is really the most efficient way of scripting for data science)
-  - [Tensors](https://pytorch.org/tutorials/beginner/basics/tensorqs_tutorial.html)
-  - [Autograd](https://pytorch.org/tutorials/beginner/basics/autogradqs_tutorial.html)
-  - [Training](https://pytorch.org/tutorials/beginner/basics/optimization_tutorial.html)
-  - [Pytorch modules](https://pytorch.org/tutorials/beginner/nn_tutorial.html)
+[//]: # (    - Person: )
 
-# Workflow
-- We will establish this on the fly
-- When some work might be useful to others, push it to repo in **common** package and let know on discord
-- All in pytorch, vectorized operations
-- All functions are most likely already done somewhere
-  - KNN - [PyTorch3D](https://github.com/facebookresearch/pytorch3d)
-    - Recommended to install from local clone (should be safest, sometimes it needs specific version of pytorch) 
-  - metrics - [torchmetrics](https://github.com/Lightning-AI/torchmetrics)
-  - PCA - torch.svd
-  - visualization - matplotlib, mayavi
+[//]: # (    - Tasks:)
+
+[//]: # (    - References:)
+
+[//]: # (    - Input:)
+
+[//]: # (    - Output:)
+
+
+### Find Datasets for Lanes
+- General: Potential datasets for using existing annotations,
+images to LiDAR projection annotation, HD maps with lanes and LiDAR
+- Person:  
+- Tasks: 
+    1. List all potentially useful datasets with instance-level annotations
+    2. Make a material (table, half page of text) we can decide on and send to Valeo 
+- References:
+    1. OpenDriveLab/OpenLane-V2: [NeurIPS 2023 Track Datasets] - No LiDAR
+    2. Argoverse 2 HD maps
+    3. [K-LANE](https://github.com/kaist-avelab/k-lane)
+- Input: Search on internet and try to map existings datasets to our needs
+- Output:
+    1. List of datasets with parameters in text or table (has id annotations, scene diversity, LiDAR sensor, ...)
+    2. Conclussion on what datasets we can use for learning the model to detect lanes id/polylines
+
     
-- Compute in 2D after segmentation
-- Jupyter (Recommended for development, then automatically export to scripts)
-- Github Copilot (one month free trial)
-- Coordinated refactor when needed
-- Release version branch when outputs works end-to-end 
 
-[//]: # (- Pre-push &#40;https://git-scm.com/book/en/v2/Customizing-Git-Git-Hooks&#41; or bash script)
+### K-Lane Devkit + Metrics
+  - General: Prepare annotation tool and understand the metrics Lane extraction scenario (K-Lane should use the most common evaluation protocols)
+  - Person:
+  - Tasks:
+    1. Download K-Lane devkit and run annotation GUI
+    2. Annotate one point cloud from Valeo dataset to learn how to use it, annotate full line, not segments (dashed)
+    3. Think about transfer of K-Lane annotations into Valeo polylines format
+    4. Construct meaningful metrics which we can use for evaluation given what we have in Valeo and what we can annotate  
+  - Reference:
+    1. [Paper](https://arxiv.org/pdf/2110.11048.pdf)
+    2. [K-LANE](https://github.com/kaist-avelab/k-lane)
+  - Input: Codebase, existing data from Valeo
+  - Output: System for annotating data, Exact and systematic protokol, how we should evaluate our results
 
-# GPU Server
-- Address: username@boruvka.felk.cvut.cz
-- Store to path: /datagrid/personal/vacekpa2  ; limit 500GB for whole folder
-- Should have enough shared gpu cards
-  - **pyconfig** file is used for python environment on server as well as remote interpreter
-  - It should have everything included (torch, pytorch3d, torchmetrics, matplotlib, pandas, sklearn, scipy, numpy, jupyter, ...)
-    - if not, search via command "module spider package_name"
-  - Tunnel does not work for me, I set up the **sshfs** to see files from local computer and visualize in local
-  - Highly recommend estabilishing remote interpreter for bigger computations than toy examples 
-  - **~/.bashrc** is sourced everytime you connect through ssh, you can add aliases there or some convinient commands
-  - I have a script for "remote" and fluent point cloud visualization using pptk library, We will discuss that when you have problems with visuals from the server 
- 
-# Data on drive 
-- Let me know if access is needed
-- Discuss between each other how to structure data for the project to fit your workflow
-- Data: https://drive.google.com/drive/folders/1urwhi2SGGB3U7t3_JgcvFU1kCCE-ksuS?usp=sharing
+### K-Lane <--> Valeo Data
+  - General: Download and learn how to use the data and easily transfer with Valeo format
+  - Person:
+  - Tasks:
+      1. Download K-Lane dataset
+      2. Learn how to use the dataset
+      3. Convert to Valeo format
+  - References: 
+      1. [K-LANE](https://github.com/kaist-avelab/k-lane)
+  - Input: K-Lane Dataset, Valeo Dataset
+  - Output: Functions to allow for training on both datasets, merging the formats/annotations 
 
-
-# Discord server
-- Link to discord: https://discord.gg/qvYaWnTm
- 
-
-# Segmentation
-![alt text](doc/images/segmentation.png)
-
-- [x] Start with one data sequence with labels from Filip (point-wise)
-- [x] After loading the data, everything should be in pytorch
-- [x] Data loading should have a choice to load fever time-frames
-- [ ] IoU metric to evaluate the segmentation (codes in the repo)
-- [x] Experiment with different hyperparameters (thresholds, points for normal ...) 
-- [ ] Visualize normals (mayavi is good for this, example in the repo)
-- [ ] Visualize performance in table (recommend pandas) and graph (matplotlib)
-- [ ] Camera images - for lane markings?
-- [ ] Check statistics for annotation sequences - intensity histogram on labels
-- [ ] Cylinder3D waymo from Awet and finetune on Valeo dataset
-
-# Instance
-![alt text](doc/images/instance.png)
-
-- [x] Start with synthetically generated data (in example)
-- [x] Try dbscan to get the ids to understand the format
-- [x] Look at the lanes_example.py for calculation of KNN in pytorch3d and smoothness loss.
-- [x] Run example and compare it in Instance segmentation metric.
-- [x] Initialize vectors from points and optimize them in pytorch to match values from PCA eigen vectors
-  - [x] points from same id should have the same value
-  - [x] optimize only angle as well (useful in future)
-  
-- [x] Visualize the vectors in the point cloud
-- [ ] Use real data and try the PCA from dbscan
-- [ ] Develope loss that respects the shape of lanes (we need to discuss this later)
-    - [ ] How to split bigger clusters to lanes?
-  
-# Lane direction vectors
-![alt text](doc/images/instance_matching.png)
-
-- [x] Generate toy samples of instance centers (matplotlib ginput for example)
-- [x] Assign vector field to the points represented as torch tensors Idx x [vx,vy]
-- [x] Use pytorch3d Nearest neighboor function to calculate chamfer distance (L_CD) between instance and closest instance to its vector
-- [x] Optimize the vectors to minimize the chamfer distance and visualize output
-- [x] Add smoothness loss (L_smooth) to make connected instance similar (the loss after that will converge but not to zero with both losses)
-- [x] Make animation of the optimization at each iteration
-- [x] Use output from real data instances
-- [x] Add pca loss from instance module to the solution
-
-# Full pipeline so far
-![alt text](doc/images/lanes_method.png)
+### K-Lane Detection Model
+  - General: To get baseline for lane detection
+  - Person: Two people (Honza and Yana)?
+  - Tasks:
+      1. Learn how to infer the K-Lane model used in [Paper](https://arxiv.org/pdf/2110.11048.pdf)
+      3. Run The model on Valeo Dataset 
+      4. Calculate metrics on Valeo Dataset 
+      5. Retrain models on Valeo Dataset and show metrics 
+  - References:
+      1. [K-LANE](https://github.com/kaist-avelab/k-lane)
+  - Input: Existing codebase, data samples
+  - Output: Importable models, calculated metrics on both datasets using training on K-Lane and both.
 
 
 
-# brain dump 23.6. Valeo Meeting
+### Future
+- Camera propagated to LiDAR - To demonstrate additional data gathering
+- Argoverse Dataset HD maps - to get additional data
+- Pseudo-labelling - to easily boost performance
+- Test-Time Augmentation - to easily boost performance
+- Active learning framework - to save annotations
 
-- Linearni / nelinearni mod LiDARu (skalovani) - jak dostat?
-- Filtrace - podle intenzity a vzdalenosti
-- Dataset bez filtrace pro normaly?
-- bottleneck je furt ta segmentace
-- Ground fit jako mesh sit?
-- filter ground by variance in bin? Still with pts above, smoothing
-- Vahovat ground plane intensitou, normalou etc. - jedno tema
-- RANSAC - residual threshold prvotni filtrovani
-- full point cloud je heavy na optimization aproach
-- Intra/inter frame matching
-- optimalizace vede na object-unique features - mozna neni dobre?
-- KPI? - segmentace GT - udelat id, fitting a jak to zpetne zapadne do segmentace?
-- metrika na urovni polyline jako hlavni pro projekt
-- metrika: navrhnout polylines, ale drzet se modularnich zatim
-- Release version - pustit v ramci velke ulohy
