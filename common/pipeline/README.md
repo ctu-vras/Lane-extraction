@@ -39,3 +39,6 @@ Instances takes in M*6 and outputs K*3 of points that we identified as instances
 Matching takes in K*3 and outputs nothing to dictionary but creates a file with lines in xml format.
 ## Troubleshoting
 If you have problems with running the application you can open an issue or email me at kominma3@fel.cvut.cz
+
+## TODO
+add xml screenshot
