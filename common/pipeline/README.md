@@ -37,6 +37,11 @@ To move the data between modules, we upload the results to dictionary. So main.p
 Segmentation takes in N*6 and outputs M*6 of points that we identified as lane. It also outputs mask to apply to the original data.
 Instances takes in M*6 and outputs K*3 of points that we identified as instances of lanes.(each dash). In format(x,y,instance_id)
 Matching takes in K*3 and outputs nothing to dictionary but creates a file with lines in xml format.
+
+Example of a XML file:
+![alt text](http://url/to/img.png)
+
+
 ## Troubleshoting
 If you have problems with running the application you can open an issue or email me at kominma3@fel.cvut.cz
 
