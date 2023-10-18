@@ -1,6 +1,6 @@
 RUN_PARTS:
-  SEGMENTATION: True
-  INSTANCES: True
+  SEGMENTATION: False
+  INSTANCES: False
   MATCHING: True
 SAVE_NAMES:
   SEGMENTATION: "segmentation.npy"
