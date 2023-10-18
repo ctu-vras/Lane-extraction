@@ -18,7 +18,7 @@
 ### Find Datasets for Lanes
 - General: Potential datasets for using existing annotations,
 images to LiDAR projection annotation, HD maps with lanes and LiDAR
-- Person:  
+- Person: Ondra
 - Tasks: 
     1. List all potentially useful datasets with instance-level annotations
     2. Make a material (table, half page of text) we can decide on and send to Valeo 
@@ -35,7 +35,7 @@ images to LiDAR projection annotation, HD maps with lanes and LiDAR
 
 ### K-Lane Devkit + Metrics
   - General: Prepare annotation tool and understand the metrics Lane extraction scenario (K-Lane should use the most common evaluation protocols)
-  - Person:
+  - Person: Ondra
   - Tasks:
     1. Download K-Lane devkit and run annotation GUI
     2. Annotate one point cloud from Valeo dataset to learn how to use it, annotate full line, not segments (dashed)
@@ -49,7 +49,7 @@ images to LiDAR projection annotation, HD maps with lanes and LiDAR
 
 ### K-Lane <--> Valeo Data
   - General: Download and learn how to use the data and easily transfer with Valeo format
-  - Person:
+  - Person: Yana
   - Tasks:
       1. Download K-Lane dataset
       2. Learn how to use the dataset
@@ -61,7 +61,7 @@ images to LiDAR projection annotation, HD maps with lanes and LiDAR
 
 ### K-Lane Detection Model
   - General: To get baseline for lane detection
-  - Person: Two people (Honza and Yana)?
+  - Person: Martin a Honza
   - Tasks:
       1. Learn how to infer the K-Lane model used in [Paper](https://arxiv.org/pdf/2110.11048.pdf)
       3. Run The model on Valeo Dataset 
