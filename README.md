@@ -35,7 +35,7 @@ images to LiDAR projection annotation, HD maps with lanes and LiDAR
 
 ### K-Lane Devkit + Metrics
   - General: Prepare annotation tool and understand the metrics Lane extraction scenario (K-Lane should use the most common evaluation protocols)
-  - Person: Ondra
+  - Person: Honza + Martin
   - Tasks:
     1. Download K-Lane devkit and run annotation GUI
     2. Annotate one point cloud from Valeo dataset to learn how to use it, annotate full line, not segments (dashed)
@@ -61,7 +61,7 @@ images to LiDAR projection annotation, HD maps with lanes and LiDAR
 
 ### K-Lane Detection Model
   - General: To get baseline for lane detection
-  - Person: Martin a Honza
+  - Person: -
   - Tasks:
       1. Learn how to infer the K-Lane model used in [Paper](https://arxiv.org/pdf/2110.11048.pdf)
       3. Run The model on Valeo Dataset 
