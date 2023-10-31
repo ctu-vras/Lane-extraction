@@ -1,83 +1,47 @@
-# Lane-extraction
+# Lane Marking for Valeo
 
-[//]: # (## Ticket Structure)
+Python application for detecting lanes from Lidar. 
 
-[//]: # (    - General:)
+Takes data as a .pcd in format N*6(x,y,z,intensity,frame_id,laser_id) and outputs lines in xml format.
 
-[//]: # (    - Person: )
+## Installation
+I strongly recommend to use docker image, because it is the easiest way to run the application and ensure that all libraries are installed correctly.
 
-[//]: # (    - Tasks:)
+- First you need to get docker image from hub or file
+  ```bash 
+  docker load valeo.tar.gz
+  ```
+- Alternative is to copy project from github, which enables to use docker-compose file to run it.
+  ```bash
+  git clone https://github.com/ctu-vras/Lane-extraction.git
+  docker compose up
+  ```
+Before running the application you need to prepare a folder that contains two files. 
+  - filename.pcd with data you want to process
+  - config.yaml - config file that will overwrite default parameters
+    - lines that are recommended to overwrite
+      - DATA_PATH: "source/in/filename.pcd" just change the filename to actual file. source/in is a directory in docker container that will be later mapped on your host directory
+      - CUDA_CARD: 'cuda:0' default is cuda:0 but if you have more than one gpu, you can choose which one to use
+      - XML_FILE_NAME: "source/out/result.xml" same as data path, just change the filename to what you want
+      - ANIMATION: True If you want to see the animation of the process set it to True but it can take a lot of time and fail for big instances. If you don't want them set it to False
+      
+To run the application you need to run docker container with mapped volumes
+```bash
+  docker run -v path/to/your/folder:/Lane-extraction/source/in -v path/to/your/folder:/Lane-extraction/source/out kominma3/valeo_images:marking
+```
 
-[//]: # (    - References:)
+## Description of the inside work:
+There are three main parts of the application. Segmentation, Instances, Matching. To connect these parts, I created a folder in common/pipeline that has 2 files. main.py and config.yaml. If you want to run the application, you need to copy main.py into root folder, so into Lane-extraction.
+This main.py reads config.yaml to set parameters as what data we want to read, naming of intermediate files. Then it calls segmentation, instances and matching modules that each has its own folder. Each of these modules has file module_pipeline.py and config.yaml. These files are used to run each module and return the results back.
+To move the data between modules, we upload the results to dictionary. So main.py creates a dictionary, opens the pcd and then its send to segmentation. Segmentation returns the dictionary with segmented data, and then the main.py sends this dictionary to instances and so on.
+Segmentation takes in N*6 and outputs M*6 of points that we identified as lane. It also outputs mask to apply to the original data.
+Instances takes in M*6 and outputs K*3 of points that we identified as instances of lanes.(each dash). In format(x,y,instance_id)
+Matching takes in K*3 and outputs nothing to dictionary but creates a file with lines in xml format.
 
-[//]: # (    - Input:)
+Example of a XML file:
+![alt text](https://github.com/ctu-vras/Lane-extraction/blob/main/common/pipeline/img.png?raw=true)
+Each lane has its id and then there are list of coordinates for each point that represents the line.
 
-[//]: # (    - Output:)
-
-
-### Find Datasets for Lanes
-- General: Potential datasets for using existing annotations,
-images to LiDAR projection annotation, HD maps with lanes and LiDAR
-- Person: Ondra
-- Tasks: 
-    1. List all potentially useful datasets with instance-level annotations
-    2. Make a material (table, half page of text) we can decide on and send to Valeo 
-- References:
-    1. OpenDriveLab/OpenLane-V2: [NeurIPS 2023 Track Datasets] - No LiDAR
-    2. Argoverse 2 HD maps
-    3. [K-LANE](https://github.com/kaist-avelab/k-lane)
-- Input: Search on internet and try to map existings datasets to our needs
-- Output:
-    1. List of datasets with parameters in text or table (has id annotations, scene diversity, LiDAR sensor, ...)
-    2. Conclussion on what datasets we can use for learning the model to detect lanes id/polylines
-
-    
-
-### K-Lane Devkit + Metrics
-  - General: Prepare annotation tool and understand the metrics Lane extraction scenario (K-Lane should use the most common evaluation protocols)
-  - Person: Honza + Martin
-  - Tasks:
-    1. Download K-Lane devkit and run annotation GUI
-    2. Annotate one point cloud from Valeo dataset to learn how to use it, annotate full line, not segments (dashed)
-    3. Think about transfer of K-Lane annotations into Valeo polylines format
-    4. Construct meaningful metrics which we can use for evaluation given what we have in Valeo and what we can annotate  
-  - Reference:
-    1. [Paper](https://arxiv.org/pdf/2110.11048.pdf)
-    2. [K-LANE](https://github.com/kaist-avelab/k-lane)
-  - Input: Codebase, existing data from Valeo
-  - Output: System for annotating data, Exact and systematic protokol, how we should evaluate our results
-
-### K-Lane <--> Valeo Data
-  - General: Download and learn how to use the data and easily transfer with Valeo format
-  - Person: Yana
-  - Tasks:
-      1. Download K-Lane dataset
-      2. Learn how to use the dataset
-      3. Convert to Valeo format
-  - References: 
-      1. [K-LANE](https://github.com/kaist-avelab/k-lane)
-  - Input: K-Lane Dataset, Valeo Dataset
-  - Output: Functions to allow for training on both datasets, merging the formats/annotations 
-
-### K-Lane Detection Model
-  - General: To get baseline for lane detection
-  - Person: -
-  - Tasks:
-      1. Learn how to infer the K-Lane model used in [Paper](https://arxiv.org/pdf/2110.11048.pdf)
-      3. Run The model on Valeo Dataset 
-      4. Calculate metrics on Valeo Dataset 
-      5. Retrain models on Valeo Dataset and show metrics 
-  - References:
-      1. [K-LANE](https://github.com/kaist-avelab/k-lane)
-  - Input: Existing codebase, data samples
-  - Output: Importable models, calculated metrics on both datasets using training on K-Lane and both.
-
-
-
-### Future
-- Camera propagated to LiDAR - To demonstrate additional data gathering
-- Argoverse Dataset HD maps - to get additional data
-- Pseudo-labelling - to easily boost performance
-- Test-Time Augmentation - to easily boost performance
-- Active learning framework - to save annotations
+## Troubleshoting
+If you have problems with running the application you can open an issue or email me at kominma3@fel.cvut.cz
 
