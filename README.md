@@ -37,9 +37,9 @@ To run the application you need to run docker container with mapped volumes
 There are three main parts of the application. Segmentation, Instances, Matching. To connect these parts, I created a folder in common/pipeline that has 2 files. main.py and config.yaml. If you want to run the application, you need to copy main.py into root folder, so into Lane-extraction.
 This main.py reads config.yaml to set parameters as what data we want to read, naming of intermediate files. Then it calls segmentation, instances and matching modules that each has its own folder. Each of these modules has file module_pipeline.py and config.yaml. These files are used to run each module and return the results back.
 To move the data between modules, we upload the results to dictionary. So main.py creates a dictionary, opens the pcd and then its send to segmentation. Segmentation returns the dictionary with segmented data, and then the main.py sends this dictionary to instances and so on.
-Segmentation takes in N*5 and outputs M*5 of points that we identified as lane. It also outputs mask to apply to the original data.
-Instances takes in M*5 and outputs K*3 of points that we identified as instances of lanes.(each dash). In format(x,y,instance_id)
-Matching takes in K*3 and outputs nothing to dictionary but creates a file with lines in xml format.
+Segmentation takes in N * 5 and outputs M * 5 of points that we identified as lane. It also outputs mask to apply to the original data.
+Instances takes in M * 5 and outputs K * 3 of points that we identified as instances of lanes.(each dash). In format(x,y,instance_id)
+Matching takes in K * 3 and outputs nothing to dictionary but creates a file with lines in xml format.
 
 Example of a XML file:
 ![alt text](https://github.com/ctu-vras/Lane-extraction/blob/main/common/pipeline/img.png?raw=true)
