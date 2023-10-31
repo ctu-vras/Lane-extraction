@@ -1,131 +1,49 @@
-# Lane-extraction
+# Lane Marking for Valeo
 
-| Person |                 Module                  | Other Tasks | Notes | 
-|--------|:---------------------------------------:|------------:|------:|
-| Yana   | Current Framework Results, Segmentation |             |       |
-| Honza  |                Instance                 |             |       |
-| Ondra  |                   TBD                   |             |       |
-| Martin |            Instance Matching            |             |       |
-| Patrik |              Full Pipeline              |             |       |
+Python application for detecting lanes from Lidar. Version with cylinder segmentation.
 
-# TBD Tasks
-- [ ] Data
-- [ ] Module class
-- [ ] Visuals
-- [ ] Klane dataset
-- [ ] Non-linear least square instead of optimizer
+Takes data as a .pcd or .npz in format N*5(x,y,z,intensity,frame_id) and outputs lines in xml format or as 2d array of points, where each array represents one line.
 
-# Starters
-- If you are not familiar with pytorch, go over these tutorials:
-  - It covers the basics of optimization with pytorch, that is what we will use
-  - Try it in Jupyter notebooks (it is really the most efficient way of scripting for data science)
-  - [Tensors](https://pytorch.org/tutorials/beginner/basics/tensorqs_tutorial.html)
-  - [Autograd](https://pytorch.org/tutorials/beginner/basics/autogradqs_tutorial.html)
-  - [Training](https://pytorch.org/tutorials/beginner/basics/optimization_tutorial.html)
-  - [Pytorch modules](https://pytorch.org/tutorials/beginner/nn_tutorial.html)
+## Installation
+I strongly recommend to use docker image, because it is the easiest way to run the application and ensure that all libraries are installed correctly.
 
-# Workflow
-- We will establish this on the fly
-- When some work might be useful to others, push it to repo in **common** package and let know on discord
-- All in pytorch, vectorized operations
-- All functions are most likely already done somewhere
-  - KNN - [PyTorch3D](https://github.com/facebookresearch/pytorch3d)
-    - Recommended to install from local clone (should be safest, sometimes it needs specific version of pytorch) 
-  - metrics - [torchmetrics](https://github.com/Lightning-AI/torchmetrics)
-  - PCA - torch.svd
-  - visualization - matplotlib, mayavi
-    
-- Compute in 2D after segmentation
-- Jupyter (Recommended for development, then automatically export to scripts)
-- Github Copilot (one month free trial)
-- Coordinated refactor when needed
-- Release version branch when outputs works end-to-end 
+- First you need to get docker image from hub or file
+  ```bash 
+  docker load cylinder_valeo.tar.gz
+  ```
+- Alternative is to copy project from github, which enables to use docker-compose file to run it.
+  You need to change the branch from main to xyzi_nn_segmentation.
+- ```bash
+  git clone https://github.com/ctu-vras/Lane-extraction.git
+  docker compose up
+  ```
+Before running the application you need to prepare a folder that contains two files. 
+  - filename.npz with data you want to process
+  - config.yaml - config file that will overwrite default parameters
+    - lines that are recommended to overwrite
+      - DATA_PATH: "source/in/filename.npz" just change the filename to actual file. source/in is a directory in docker container that will be later mapped on your host directory
+      - CUDA_CARD: 'cuda:0' default is cuda:0 but if you have more than one gpu, you can choose which one to use
+      - XML_FILE_NAME: "source/out/result.xml" same as data path, just change the filename to what you want
+      - ANIMATION: True If you want to see the animation of the process set it to True but it can take a lot of time and fail for big instances. If you don't want them set it to False
+      - MODEL_CONFIG_PATH: "path/to/model/pandar.yaml" path to the model inside docker. You can for example use directory source/in.
+      - and many other. To see all of them go to github and see file common/pipeline/config in xyzi_nn_segmentation.
+  - optional: new pandar.yaml you want to use istead of default one.
+To run the application you need to run docker container with mapped volumes
+```bash
+  docker run -v path/to/your/folder:/Lane-extraction/source/in -v path/to/your/folder:/Lane-extraction/source/out kominma3/valeo_images:marking
+```
 
-[//]: # (- Pre-push &#40;https://git-scm.com/book/en/v2/Customizing-Git-Git-Hooks&#41; or bash script)
+## Description of the inside work:
+There are three main parts of the application. Segmentation, Instances, Matching. To connect these parts, I created a folder in common/pipeline that has 2 files. main.py and config.yaml. If you want to run the application, you need to copy main.py into root folder, so into Lane-extraction.
+This main.py reads config.yaml to set parameters as what data we want to read, naming of intermediate files. Then it calls segmentation, instances and matching modules that each has its own folder. Each of these modules has file module_pipeline.py and config.yaml. These files are used to run each module and return the results back.
+To move the data between modules, we upload the results to dictionary. So main.py creates a dictionary, opens the pcd and then its send to segmentation. Segmentation returns the dictionary with segmented data, and then the main.py sends this dictionary to instances and so on.
+Segmentation takes in N*5 and outputs M*5 of points that we identified as lane. It also outputs mask to apply to the original data.
+Instances takes in M*5 and outputs K*3 of points that we identified as instances of lanes.(each dash). In format(x,y,instance_id)
+Matching takes in K*3 and outputs nothing to dictionary but creates a file with lines in xml format.
 
-# GPU Server
-- Address: username@boruvka.felk.cvut.cz
-- Store to path: /datagrid/personal/vacekpa2  ; limit 500GB for whole folder
-- Should have enough shared gpu cards
-  - **pyconfig** file is used for python environment on server as well as remote interpreter
-  - It should have everything included (torch, pytorch3d, torchmetrics, matplotlib, pandas, sklearn, scipy, numpy, jupyter, ...)
-    - if not, search via command "module spider package_name"
-  - Tunnel does not work for me, I set up the **sshfs** to see files from local computer and visualize in local
-  - Highly recommend estabilishing remote interpreter for bigger computations than toy examples 
-  - **~/.bashrc** is sourced everytime you connect through ssh, you can add aliases there or some convinient commands
-  - I have a script for "remote" and fluent point cloud visualization using pptk library, We will discuss that when you have problems with visuals from the server 
- 
-# Data on drive 
-- Let me know if access is needed
-- Discuss between each other how to structure data for the project to fit your workflow
-- Data: https://drive.google.com/drive/folders/1urwhi2SGGB3U7t3_JgcvFU1kCCE-ksuS?usp=sharing
+Example of a XML file:
+![alt text](https://github.com/ctu-vras/Lane-extraction/blob/main/common/pipeline/img.png?raw=true)
+Each lane has its id and then there are list of coordinates for each point that represents the line.
 
-
-# Discord server
-- Link to discord: https://discord.gg/qvYaWnTm
- 
-
-# Segmentation
-![alt text](doc/images/segmentation.png)
-
-- [x] Start with one data sequence with labels from Filip (point-wise)
-- [x] After loading the data, everything should be in pytorch
-- [x] Data loading should have a choice to load fever time-frames
-- [ ] IoU metric to evaluate the segmentation (codes in the repo)
-- [x] Experiment with different hyperparameters (thresholds, points for normal ...) 
-- [ ] Visualize normals (mayavi is good for this, example in the repo)
-- [ ] Visualize performance in table (recommend pandas) and graph (matplotlib)
-- [ ] Camera images - for lane markings?
-- [ ] Check statistics for annotation sequences - intensity histogram on labels
-- [ ] Cylinder3D waymo from Awet and finetune on Valeo dataset
-
-# Instance
-![alt text](doc/images/instance.png)
-
-- [x] Start with synthetically generated data (in example)
-- [x] Try dbscan to get the ids to understand the format
-- [x] Look at the lanes_example.py for calculation of KNN in pytorch3d and smoothness loss.
-- [x] Run example and compare it in Instance segmentation metric.
-- [x] Initialize vectors from points and optimize them in pytorch to match values from PCA eigen vectors
-  - [x] points from same id should have the same value
-  - [x] optimize only angle as well (useful in future)
-  
-- [x] Visualize the vectors in the point cloud
-- [ ] Use real data and try the PCA from dbscan
-- [ ] Develope loss that respects the shape of lanes (we need to discuss this later)
-    - [ ] How to split bigger clusters to lanes?
-  
-# Lane direction vectors
-![alt text](doc/images/instance_matching.png)
-
-- [x] Generate toy samples of instance centers (matplotlib ginput for example)
-- [x] Assign vector field to the points represented as torch tensors Idx x [vx,vy]
-- [x] Use pytorch3d Nearest neighboor function to calculate chamfer distance (L_CD) between instance and closest instance to its vector
-- [x] Optimize the vectors to minimize the chamfer distance and visualize output
-- [x] Add smoothness loss (L_smooth) to make connected instance similar (the loss after that will converge but not to zero with both losses)
-- [x] Make animation of the optimization at each iteration
-- [x] Use output from real data instances
-- [x] Add pca loss from instance module to the solution
-
-# Full pipeline so far
-![alt text](doc/images/lanes_method.png)
-
-
-
-# brain dump 23.6. Valeo Meeting
-
-- Linearni / nelinearni mod LiDARu (skalovani) - jak dostat?
-- Filtrace - podle intenzity a vzdalenosti
-- Dataset bez filtrace pro normaly?
-- bottleneck je furt ta segmentace
-- Ground fit jako mesh sit?
-- filter ground by variance in bin? Still with pts above, smoothing
-- Vahovat ground plane intensitou, normalou etc. - jedno tema
-- RANSAC - residual threshold prvotni filtrovani
-- full point cloud je heavy na optimization aproach
-- Intra/inter frame matching
-- optimalizace vede na object-unique features - mozna neni dobre?
-- KPI? - segmentace GT - udelat id, fitting a jak to zpetne zapadne do segmentace?
-- metrika na urovni polyline jako hlavni pro projekt
-- metrika: navrhnout polylines, ale drzet se modularnich zatim
-- Release version - pustit v ramci velke ulohy
+## Troubleshoting
+If you have problems with running the application you can open an issue or email me at kominma3@fel.cvut.cz
