@@ -20,6 +20,7 @@ def segmentation_main(data_dict, config):
     if config['MODEL_RETURN_UPSAMPLED']:
         # using upsampled mask --> mask compatible with original pointcloud
         final_mask = model_results.astype(bool)
+        final_mask = np.logical_and(final_mask, point_cloud[:, 3] >= config['POSTPROCESSING_INTENSITY_TRESH'])
         data_dict['segmentation_mask'] = final_mask
         data_dict['segmentation'] = point_cloud[final_mask]
     else:
@@ -45,7 +46,8 @@ if __name__ == '__main__':
     # load point cloudd
     #pcd_raw = PyntCloud.from_file(pcd_path)
     #pcd_numpy = pcd_raw.points.to_numpy()
-    pcd_numpy = np.load('./../merge_test.npz')['data']
+    pcd_numpy = np.load('/home/koondra/merge_test_small.npz')['data']
+    pcd_numpy = pcd_numpy[pcd_numpy[:,0]>50,:]
     data_dict = dict()
     data_dict['data'] = pcd_numpy[:, :5]
     print(f"pointcloud loaded {data_dict['data'].shape}")

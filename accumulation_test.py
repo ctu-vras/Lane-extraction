@@ -71,5 +71,5 @@ if __name__ == '__main__':
     merged_pc = merge_point_cloud(scan_list, odom_list, config)
     merged_down_pc = voxel_downsample(merged_pc, 0.15)
     print(f'downsampled {merged_down_pc.shape}')
-    np.savez('./merge_test.npz',data=merged_pc, data_down=merged_down_pc)
+    np.savez('./merge_test_small.npz',data=merged_pc, data_down=merged_down_pc)
 

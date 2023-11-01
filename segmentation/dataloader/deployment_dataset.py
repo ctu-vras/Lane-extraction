@@ -194,9 +194,7 @@ class DeploymentDataset(data.Dataset):
             pbar = tqdm(total=unique_grid_indices.shape[0])
         for temp_idx in range(unique_grid_indices.shape[0]):
             grid_idx = unique_grid_indices[temp_idx, :]
-            print('getting cover')
             cur_cover_mask = self.choose_cover(grid_idx, grid_indices, grid_size, max_pts)
-            print('got cover')
             cover_masks.append(cur_cover_mask)
 
             if first_call:

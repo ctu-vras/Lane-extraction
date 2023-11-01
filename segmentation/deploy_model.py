@@ -46,7 +46,7 @@ def parse_input(input_path: str):
         scans = src_file['scan_list']
         odoms = src_file['odom_list']
 
-
+    remapped_intensities = False
     scan_list = []
     pose_list = []
     N = scans.shape[0]
@@ -66,14 +66,16 @@ def parse_input(input_path: str):
         z = scan['z']
         i = scan['i']
         if np.max(i) <= 1.1:
-            print('Remapping intensities to <0, 255>')
             i *= 255
+            remapped_intensities = True
         parsed_scan = np.vstack([x, y, z, i]).T
 
         scan_list.append(parsed_scan)
         pose_list.append(pose_matrix)
         pbar.update(1)
     pbar.close()
+    if remapped_intensities:
+        print('Remapped intensities to <0, 255>')
     return scan_list, pose_list
 
 
