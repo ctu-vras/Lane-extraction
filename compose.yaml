@@ -1,7 +1,7 @@
 services:
   server:
     build: .
-    image: kominma3/valeo_images:marking
+    image: kominma3/valeo_images:v6
     volumes:
        - /home/komajz/PycharmProjects/Lane-extraction/common/data:/Lane-extraction/source/in
        - /home/komajz/PycharmProjects/Lane-extraction/common/data/out:/Lane-extraction/source/out

@@ -12,6 +12,8 @@ from ruamel.yaml import YAML
 
 def main():
     # load config from yaml inside project
+    print(torch.version.cuda)
+    print(torch.cuda.is_available())
     yaml = YAML()
     yaml.default_flow_style = False
     with open('./common/pipeline/config.yaml', "r") as f:
@@ -19,13 +21,14 @@ def main():
     # load config from yaml if there is one mounted from docker this config will
     #overwrite all properties that are same as the one inside the project
     if os.path.exists('source/in/config.yaml'):
+        print("Loading config from outside")
         with open('source/in/config.yaml', "r") as f:
             outside_config = yaml.load(f)
         for key in outside_config:
             config[key] = outside_config[key]
     #save config to output to see what was used
     if os.path.exists('source/out'):
-        with open('source/out/config.yaml', 'w') as yaml_output:
+        with open('source/out/config_out.yaml', 'w') as yaml_output:
             yaml.dump(config, yaml_output)
     #create a file path to the data
     path = os.path.join(os.path.abspath(os.curdir), config['DATA_PATH'])
@@ -35,20 +38,15 @@ def main():
     #load point cloud from file
     if config['RUN_PARTS']['SEGMENTATION']:
         print("Loading point cloud")
-        '''cloud = PyntCloud.from_file(path)
-        data = cloud.points
-        data_np = data.to_numpy()
-        point_cloud['data'] = data_np'''
-        #point_cloud['data'] = np.load(path)['data']
         scan_list, pose_list = parse_input(path)
         point_cloud['data'] = merge_point_cloud(frames_list=scan_list, pose_list=pose_list, pipeline_config=config)
         point_cloud['poses'] = pose_list
-
+    print("Point cloud loaded")
     #clear GPU before starting
     torch.cuda.set_device(config['CUDA_CARD'])
     torch.cuda.empty_cache()
     #prepare keys for the dictionary
-    point_cloud['segmentation'] = None  # M*4 (x,y,z,frame_id)
+    point_cloud['segmentation'] = None  # M*5 (x,y,z,intensity,frame_id)
     point_cloud['instances'] = None  # L*3 (x,y,instances)
     point_cloud['matching'] = None  # L*1 int (instance id)
     #either run segmentation else load it
@@ -68,15 +66,6 @@ def main():
                 point_cloud['segmentation'] = np.load(config['LOAD_NAMES']['SEGMENTATION'])
             else:
                 return -1
-        """except Exception as e:
-            #print what caused the error
-            print("Segmentation failed")
-            print(e)
-            #try loading segmentation
-            if os.path.exists(config['LOAD_NAMES']['SEGMENTATION']):
-                point_cloud['segmentation'] = np.load(config['LOAD_NAMES']['SEGMENTATION'])
-            else:
-               return -1"""
     else:
         #load segmentation from file
         if os.path.exists(config['LOAD_NAMES']['SEGMENTATION']):
@@ -100,12 +89,6 @@ def main():
                 point_cloud['instances'] = np.load(config['LOAD_NAMES']['INSTANCES'])
             else:
                 return -1
-        """except:
-            print("Instances failed")
-            if os.path.exists(config['LOAD_NAMES']['INSTANCES']):
-                point_cloud['instances'] = np.load(config['LOAD_NAMES']['INSTANCES'])
-            else:
-                return -1"""
     else:
         #load instances from file
         if os.path.exists(config['LOAD_NAMES']['INSTANCES']):
@@ -128,21 +111,13 @@ def main():
                 point_cloud['matching'] = np.load(config['LOAD_NAMES']['MATCHING'])
             else:
                 return -1
-        """except:
-            print("Matching failed")
-            if os.path.exists('matching.npy'):
-                point_cloud['matching'] = np.load(config['LOAD_NAMES']['MATCHING'])
-            else:
-                return -1"""
+
     else:
         #load matching from file
         if os.path.exists(config['LOAD_NAMES']['MATCHING']):
             point_cloud['matching'] = np.load(config['LOAD_NAMES']['MATCHING'])
         else:
             return -1
-    #create final xml file
-    #file is created inside matching
-    #clear GPU before finishing
     torch.cuda.empty_cache()
     return point_cloud  # return filled dictionary
 

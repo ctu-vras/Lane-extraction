@@ -3,3 +3,8 @@ PyYAML
 jakteristics
 scikit-image
 ruamel.yaml
+spconv-cu117
+#torch_scatter
+tqdm==4.65
+strictyaml
+numba
