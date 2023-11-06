@@ -1,4 +1,4 @@
-FROM gaetanlandreau/pytorch3d:latest
+FROM gaetanlandreau/pytorch3d:0.7.4
 #FROM cpark90/pytorch3d:gl-runtime
 
 COPY . /Lane-extraction
