@@ -1,6 +1,6 @@
 RUN_PARTS:
-  SEGMENTATION: True
-  INSTANCES: True
+  SEGMENTATION: False
+  INSTANCES: False
   MATCHING: True
 SAVE_NAMES:
   SEGMENTATION: "segmentation.npy"
@@ -12,5 +12,6 @@ LOAD_NAMES:
   MATCHING: "matching.npy"
 DATA_PATH: "common/data/LR1_local.pcd"
 CUDA_CARD: 'cuda:0'
-XML_FILE_NAME: "result.xml"
+OUTPUT_FILE_NAME: "out_of_there.npz"
+XML_FILE_NAME: "polylines.xml"
 ANIMATION: False

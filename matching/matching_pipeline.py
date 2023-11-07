@@ -6,7 +6,7 @@ from sklearn.decomposition import PCA
 from matching.dfs_components import Graph
 from matching.export_lines import xml_result
 from matching.losses import *
-
+import torch
 
 def matching_main(point_cloud, cuda_card, file_name, run_animation):
     # load config with constants
@@ -146,12 +146,21 @@ def matching_main(point_cloud, cuda_card, file_name, run_animation):
         optimizer.step()
     # maybe remove doesnot do anything
     # to have some return
-    point_cloud['matching'] = np.ones(point_cloud['instances'].shape[0])
     # create graph from connected centers and vectors and run DFS
     g = Graph()
     g.create_graph(centers_array, optimized_directions, outreach_mask)
     # add visualisation of coloured lines
     lines = g.DFS()
+
+    matching_lines = []
+    for line in lines:
+        point_line = []
+        for point in line:
+            num_center = centers_array[point].cpu().numpy()
+            point_line.append(num_center)
+        matching_lines.append(point_line)
+    point_cloud['matching'] = matching_lines
+
     # most important create final xml
     xml_result(lines, centers_array, file_name)
     # save final image

@@ -13,18 +13,18 @@ def main():
     # load config from yaml inside project
     yaml = YAML()
     yaml.default_flow_style = False
-    with open('common/pipeline/config.yaml', "r") as f:
+    with open('./common/pipeline/config.yaml', "r") as f:
         config = yaml.load(f)
     # load config from yaml if there is one mounted from docker this config will
     #overwrite all properties that are same as the one inside the project
-    if os.path.exists('source/in/config.yaml'):
-        with open('source/in/config.yaml', "r") as f:
+    if os.path.exists('./source/in/config.yaml'):
+        with open('./source/in/config.yaml', "r") as f:
             outside_config = yaml.load(f)
         for key in outside_config:
             config[key] = outside_config[key]
     #save config to output to see what was used
-    if os.path.exists('source/out'):
-        with open('source/out/config.yaml', 'w') as yaml_output:
+    if os.path.exists('./source/out'):
+        with open('./source/out/config.yaml', 'w') as yaml_output:
             yaml.dump(config, yaml_output)
     #create a file path to the data
     path = os.path.join(os.path.abspath(os.curdir), config['DATA_PATH'])
@@ -134,9 +134,18 @@ def main():
             point_cloud['matching'] = np.load(config['LOAD_NAMES']['MATCHING'])
         else:
             return -1
-    #create final xml file
-    #file is created inside matching
-    #clear GPU before finishing
+    pose_list = []
+    dt = np.dtype([('point', object), ('id', np.uint64), ('type', np.str_), ('color', np.str_)])
+    lanes_list = []  # Create a Python list to store elements
+    i = 0
+    for line in point_cloud['matching']:
+        out_line = np.array(line, dtype=np.float32)
+        output_tuple = (out_line, i, 'Single Solid', 'White')  # Convert 'out_line' to a Python list
+        lanes_list.append(output_tuple)  # Append to the list
+        i += 1
+    lanes = np.array(lanes_list, dtype=dt)  # Convert the list to a structured array
+    #fix this
+    np.savez(config['OUTPUT_FILE_NAME'], lanes=lanes, odom_list=pose_list)
     torch.cuda.empty_cache()
     return point_cloud  # return filled dictionary
 
