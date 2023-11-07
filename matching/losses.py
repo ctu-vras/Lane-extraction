@@ -118,7 +118,7 @@ def vector_exclusivity(centers_array, vectors_array, outreach_mask, device):
         if idx >= i:
             idx += 1
         indices[i] = idx
-    sum_of_losses = torch.tensor(0.0)
+    sum_of_losses = torch.tensor(0.0,device=device)
     for j in range(num_centers):
         # skip points that are from end of polyline
         if outreach_mask[j].item() is False:
@@ -129,17 +129,21 @@ def vector_exclusivity(centers_array, vectors_array, outreach_mask, device):
         if len(mask) > 1:
             # creaters all pairs of vectors that are heading to same city
             pairs = torch.combinations(mask, r=2)
-            index1, index2 = pairs.unbind(1)
+            for pair in pairs:
+                index1,index2 = pair
+                index1 = index1.item()
+                index2 = index2.item()
+
             # skip if one of the vectors is from end of polyline
-            if outreach_mask[index1].item() is False or outreach_mask[index2].item() is False:
-                continue
-            # loss in form of diff between two vectors heading in
-            res = torch.nn.functional.mse_loss(
-                vectors_array[index1],
-                vectors_array[index2],
-                reduction='sum'
-            )
-            sum_of_losses += res
+                if outreach_mask[index1].item() is False or outreach_mask[index2].item() is False:
+                    continue
+                # loss in form of diff between two vectors heading in
+                res = torch.nn.functional.mse_loss(
+                    vectors_array[index1],
+                    vectors_array[index2],
+                    reduction='sum'
+                )
+                sum_of_losses += res
     return sum_of_losses
 
 
@@ -167,7 +171,7 @@ def exclusivity_repulsion(centers_array, vectors_array, outreach_mask, device):
         if idx >= i:
             idx += 1
         indices[i] = idx
-    sum_of_losses = torch.tensor(0.0)
+    sum_of_losses = torch.tensor(0.0,device=device)
     for j in range(num_centers):
         # skip points that are from end of polyline
         if outreach_mask[j].item() is False:
@@ -178,19 +182,23 @@ def exclusivity_repulsion(centers_array, vectors_array, outreach_mask, device):
         if len(mask) > 1:
             # creaters all pairs of vectors that are heading to same city
             pairs = torch.combinations(mask, r=2)
-            index1, index2 = pairs.unbind(1)
-            # skip if one of the vectors is from end of polyline
-            if outreach_mask[index1].item() is False or outreach_mask[index2].item() is False:
-                continue
+            for pair in pairs:
+                index1, index2 = pair
+                index1 = index1.item()
+                index2 = index2.item()
+
+                # skip if one of the vectors is from end of polyline
+                if outreach_mask[index1].item() is False or outreach_mask[index2].item() is False:
+                    continue
             # loss is to minimize negative of distance to center
             # so if there would not be -, it would push them togther
             # now it pushes them away, until they connect to different center
-            res = -torch.nn.functional.mse_loss(
-                centers_array[j] - (centers_array[index1] + vectors_array[index1]),
-                centers_array[j] - (centers_array[index2] + vectors_array[index2]),
-                reduction='sum'
-            )
-            sum_of_losses += res
+                res = -torch.nn.functional.mse_loss(
+                    centers_array[j] - (centers_array[index1] + vectors_array[index1]),
+                    centers_array[j] - (centers_array[index2] + vectors_array[index2]),
+                    reduction='sum'
+                )
+                sum_of_losses += res
     return sum_of_losses
 
 
@@ -269,7 +277,7 @@ def compute_multiplier(centers_array, vectors_array, knn_taken=5):
     return torch.tensor(mult_mask)
 
 
-def find_closest_direction(centers_array, vectors_directions):
+def find_closest_direction(centers_array, vectors_directions,device):
     # with torch.no_grad():
     output_vector = torch.ones(centers_array.shape[0], dtype=torch.bool)
     for i in range(centers_array.shape[0]):
@@ -294,6 +302,7 @@ def find_closest_direction(centers_array, vectors_directions):
                 new_direct[1] * centers_array[ex_idx][1]) + c
         if value_of_togo <= 0 and value_of_center <= 0 or value_of_togo >= 0 and value_of_center >= 0:
             output_vector[i] = False
+        output_vector = output_vector.to(device)
     return output_vector
 
 
