@@ -6,8 +6,8 @@ from pyntcloud import PyntCloud
 
 from instances.instances_pipeline import instances_main
 from matching.matching_pipeline import matching_main
-from segmentation.segmentation_pipeline import segmentation_main
-from segmentation.deploy_model import parse_input, merge_point_cloud
+#from segmentation.segmentation_pipeline import segmentation_main
+#from segmentation.deploy_model import parse_input, merge_point_cloud
 from ruamel.yaml import YAML
 
 def main():
@@ -38,9 +38,9 @@ def main():
     #load point cloud from file
     if config['RUN_PARTS']['SEGMENTATION']:
         print("Loading point cloud")
-        scan_list, pose_list = parse_input(path)
-        point_cloud['data'] = merge_point_cloud(frames_list=scan_list, pose_list=pose_list, pipeline_config=config)
-        point_cloud['poses'] = pose_list
+        #scan_list, pose_list = parse_input(path)
+        #point_cloud['data'] = merge_point_cloud(frames_list=scan_list, pose_list=pose_list, pipeline_config=config)
+        #point_cloud['poses'] = pose_list
     print("Point cloud loaded")
     #clear GPU before starting
     torch.cuda.set_device(config['CUDA_CARD'])
@@ -118,6 +118,18 @@ def main():
             point_cloud['matching'] = np.load(config['LOAD_NAMES']['MATCHING'])
         else:
             return -1
+    pose_list = []
+    dt = np.dtype([('point', object), ('id', np.uint64), ('type', np.str_), ('color', np.str_)])
+    lanes_list = []  # Create a Python list to store elements
+    i = 0
+    for line in point_cloud['matching']:
+        out_line = np.array(line, dtype=np.float32)
+        output_tuple = (out_line, i, 'Single Solid', 'White')  # Convert 'out_line' to a Python list
+        lanes_list.append(output_tuple)  # Append to the list
+        i += 1
+    lanes = np.array(lanes_list, dtype=dt)  # Convert the list to a structured array
+    # fix this
+    np.savez(config['OUTPUT_FILE_NAME'], lanes=lanes, odom_list=pose_list)
     torch.cuda.empty_cache()
     return point_cloud  # return filled dictionary
 

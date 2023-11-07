@@ -118,7 +118,7 @@ test_data_loader:
 ###################
 ## test params
 train_params:
-  model_load_path: "/home/koondra/60_test/best_val_wd.pt"
+  model_load_path: "common/pipeline/models/model02/best_val_wd.pt"
   model_save_path: "/datagrid/personal/vacekpa2/kodejond/complete_training/60_test/best_val_wd.pt"
   checkpoint_every_n_steps: 100
   max_num_epochs: 50

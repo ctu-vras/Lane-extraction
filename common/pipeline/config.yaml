@@ -1,7 +1,7 @@
 RUN_PARTS:
-  SEGMENTATION: True
-  INSTANCES: False
-  MATCHING: False
+  SEGMENTATION: False
+  INSTANCES: True
+  MATCHING: True
 SAVE_NAMES:
   SEGMENTATION: "segmentation.npy"
   INSTANCES: "instances.npy"
@@ -13,11 +13,12 @@ LOAD_NAMES:
 DATA_PATH: "/home/koondra/Downloads/BASE_Veh01_20230208_105703_000_None.npz"
 CUDA_CARD: 'cuda:0'
 XML_FILE_NAME: "result.xml"
+OUTPUT_FILE_NAME: "output.npz"
 ANIMATION: False
 
-MODEL_CONFIG_PATH: "/home/koondra/60_test/model_checkpoint_wd_config.yaml"
+MODEL_CONFIG_PATH: "common/pipeline/models/model02/model_checkpoint_wd_config.yaml"
 MODEL_PARTITION_SIZE: 60 #60 for model 2 / 30 for model 1
-MODEL_VOXEL_SIZE: 0.15
+MODEL_VOXEL_SIZE: 0.15BASE_Veh01_20230208_105703_000_None.npz
 MODEL_SAVE_DEBUG: False
 MODEL_RETURN_UPSAMPLED: True
 MODEL_SELECTION_STRATEGY: "last"

@@ -2,7 +2,8 @@
 
 Python application for detecting lanes from Lidar. Version with cylinder segmentation.
 
-Takes data as a .pcd or .npz in format N*5(x,y,z,intensity,frame_id) and outputs lines in xml format or as 2d array of points, where each array represents one line.
+Takes data as a .pcd or .npz in format N*5(x,y,z,intensity,frame_id) and outputs lines in xml format and as an .npz file from valeo, which contains lanes and odometry.
+Lanes contains from array of points, id of lane and typ of lane and colour of lane.
 
 ## Installation
 I strongly recommend to use docker image, because it is the easiest way to run the application and ensure that all libraries are installed correctly.
@@ -24,8 +25,9 @@ Before running the application you need to prepare a folder that contains two fi
       - DATA_PATH: "source/in/filename.npz" just change the filename to actual file. source/in is a directory in docker container that will be later mapped on your host directory
       - CUDA_CARD: 'cuda:0' default is cuda:0 but if you have more than one gpu, you can choose which one to use
       - XML_FILE_NAME: "source/out/result.xml" same as data path, just change the filename to what you want
+      - OUTPUT_FILE_NAME: "source/out/output.npz" same as data path, just change the filename to what your output name should be.
       - ANIMATION: True If you want to see the animation of the process set it to True but it can take a lot of time and fail for big instances. If you don't want them set it to False
-      - MODEL_CONFIG_PATH: "path/to/model/pandar.yaml" path to the model inside docker. You can for example use directory source/in.
+      - MODEL_CONFIG_PATH: "path/to/model/pandar.yaml" path to the model inside docker. There should be config inside so it is not necessary to change it. Otherwise take config from /source/in.
       - and many other. To see all of them go to github and see file common/pipeline/config in xyzi_nn_segmentation.
   - optional: new pandar.yaml you want to use istead of default one.
 To run the application you need to run docker container with mapped volumes
