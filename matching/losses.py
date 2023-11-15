@@ -274,7 +274,7 @@ def compute_multiplier(centers_array, vectors_array, knn_taken=5):
                 distance_to_set = dist[0][0][j]
         # set multiplier to be distance to that candidate
         mult_mask[i] = 0.9 * distance_to_set
-    return torch.tensor(mult_mask)
+    return torch.tensor(mult_mask).clone().detach()
 
 
 def find_closest_direction(centers_array, vectors_directions,device):

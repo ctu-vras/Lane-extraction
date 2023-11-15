@@ -6,7 +6,7 @@ from sklearn.decomposition import PCA
 from matching.dfs_components import Graph
 from matching.export_lines import xml_result
 from matching.losses import *
-
+import torch
 
 def matching_main(point_cloud, cuda_card, file_name, run_animation):
     # load config with constants
@@ -25,8 +25,8 @@ def matching_main(point_cloud, cuda_card, file_name, run_animation):
         pca.fit(all_points[all_points[:, 2] == i, :2])
         vectors_directions[new_index] = pca.components_
         new_index += 1
-    print(centers_array)
-    print(vectors_directions)
+    #print(centers_array)
+    #print(vectors_directions)
     centers_array = torch.tensor(centers_array, dtype=torch.float32)
     optimized_directions = torch.tensor(vectors_directions, dtype=torch.float32)
     # move to cuda if available
@@ -40,17 +40,17 @@ def matching_main(point_cloud, cuda_card, file_name, run_animation):
     opposite_pca = opposite_pca.to(cuda_card)
     optimized_directions = optimized_directions * opposite_pca[:, None]
     # for each vector find correct multiplier
-    print(optimized_directions)
+    #print(optimized_directions)
     # multiply each vector to have good initial length
     multiply_mask = compute_multiplier(centers_array, optimized_directions, config['neighbours_num']).to(cuda_card)
     optimized_directions = optimized_directions * multiply_mask[:, None]
-    print(optimized_directions)
+    #print(optimized_directions)
     # set up learning
     optimized_directions.requires_grad = True
     optimizer = torch.optim.SGD([optimized_directions], lr=0.02)
     # masks last points to not include them in optimization
     outreach_mask = find_closest_direction(centers_array, optimized_directions,device=cuda_card)
-    print(outreach_mask)
+    #print(outreach_mask)
     # create image of before learing
     if run_animation:
         fig = plt.figure()
