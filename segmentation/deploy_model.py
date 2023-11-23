@@ -32,7 +32,8 @@ def merge_point_cloud(frames_list: list, pose_list: list, pipeline_config):
         homog_points = np.concatenate([processed_frame[:, :3], np.ones_like(intensities).reshape(-1, 1)], axis=1)
         transformed_homog_points = homog_points @ frame_pose.T
         transformed_points = transformed_homog_points[:, :3]
-        transformed_points = np.concatenate([transformed_points, intensities.reshape(-1, 1)], axis=1)
+        frame_id_dim = np.ones((transformed_points.shape[0], 1), dtype=float) * frame_id
+        transformed_points = np.concatenate([transformed_points, intensities.reshape(-1, 1), frame_id_dim], axis=1)
         accumulated_frames.append(transformed_points)
         pbar.update(1)
 
