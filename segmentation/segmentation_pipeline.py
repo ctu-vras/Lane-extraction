@@ -30,7 +30,9 @@ def segmentation_main(data_dict, config):
         final_mask = np.logical_and(final_mask, point_cloud[:, 3] >= config['POSTPROCESSING_INTENSITY_TRESH'])
         data_dict['data'] = point_cloud
         data_dict['segmentation_mask'] = final_mask
-        data_dict['segmentation'] = point_cloud[final_mask]
+
+        final_mask = final_mask.reshape(-1, 1)
+        data_dict['segmentation'] = np.concatnate([point_cloud[final_mask, :3], point_cloud[final_mask, -1]], axis=1)
 
     if config['ANIMATION']:
         visualize_points(point_cloud, point_cloud[final_mask, :])
