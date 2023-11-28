@@ -14,6 +14,13 @@
 
 [//]: # (    - Output:)
 
+## Current state of branches:
+- main: branch has an old code. It should be similiar with heuristic but README for docker is in common/pipeline. Main purpose is overview of tasks given by Patrik.
+- heuristic: actual branch with old segmentation, but it is in final state and can be packaged into Docker
+- xyzi_nn_segmentation : actual branch with current version of cylydric segmentation that can be packaged into Docker
+- cylinder_segmentation: old branch Ondra than switched to xyzi_nn_segmentation
+- dev: very old branch nothing is there 
+
 
 ### Find Datasets for Lanes
 - General: Potential datasets for using existing annotations,
