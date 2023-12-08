@@ -268,7 +268,7 @@ def deploy_model(point_cloud: str, pipeline_config):
             pipeline_config['MODEL_VOXEL_SIZE']
         )
 
-        return full_labels
+        return full_labels, labeled_downsample
     else:
         return labeled_downsample
 

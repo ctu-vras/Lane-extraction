@@ -49,6 +49,7 @@ def main():
     point_cloud['segmentation'] = None  # M*5 (x,y,z,intensity,frame_id)
     point_cloud['instances'] = None  # L*3 (x,y,instances)
     point_cloud['matching'] = None  # L*1 int (instance id)
+    point_cloud['segmentation_downsample'] = None  # N*4 (x, y, z, intensity)
     #either run segmentation else load it
     if config['RUN_PARTS']['SEGMENTATION']:
         #try:
@@ -66,6 +67,10 @@ def main():
                 point_cloud['segmentation'] = np.load(config['LOAD_NAMES']['SEGMENTATION'])
             else:
                 return -1
+
+        # save downsampled pointcloud segmentation
+        if point_cloud['segmentation_downsample'] is not None:
+            np.save(config['SAVE_NAMES']['SEGMENTATION_DOWNSAMPLE'], point_cloud['segmentation_downsample'])
     else:
         #load segmentation from file
         if os.path.exists(config['LOAD_NAMES']['SEGMENTATION']):

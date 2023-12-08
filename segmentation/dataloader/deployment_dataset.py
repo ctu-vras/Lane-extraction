@@ -5,7 +5,7 @@ from tqdm import tqdm
 
 class DeploymentDataset(data.Dataset):
 
-    def __init__(self, point_cloud: np.ndarray, partition_size: float, voxel_size: float, max_num_pts: int = -1):
+        def __init__(self, point_cloud: np.ndarray, partition_size: float, voxel_size: float, max_num_pts: int = -1):
         self.source_point_cloud = point_cloud[:, :4]  # take xyzi
         #self.source_point_cloud = self.load_pcd_to_numpy(source_npz_file)[:,:4]
         self.partition_size = partition_size

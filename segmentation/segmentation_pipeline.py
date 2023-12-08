@@ -17,14 +17,24 @@ def segmentation_main(data_dict, config):
 
 
     print('Saving model results')
+
     if config['MODEL_RETURN_UPSAMPLED']:
         # using upsampled mask --> mask compatible with original pointcloud
-        final_mask = model_results.astype(bool)
+        mask_model_results, downsampled_model_results = model_results
+        final_mask = mask_model_results.astype(bool)
         final_mask = np.logical_and(final_mask, point_cloud[:, 3] >= config['POSTPROCESSING_INTENSITY_TRESH'])
         data_dict['segmentation_mask'] = final_mask
-        data_dict['segmentation'] = point_cloud[final_mask]
+        data_dict['segmentation'] = np.concatnate([point_cloud[final_mask, :3], point_cloud[final_mask, -1]], axis=1)
+
+        # save downsampled outputs for debugging
+        downsampled_final_mask = downsampled_model_results[:, -2].astype(bool)
+        downsampled_point_cloud = downsampled_model_results[:, :4]
+        downsampled_final_mask = np.logical_and(downsampled_final_mask, downsampled_point_cloud[:, 3] >= config['POSTPROCESSING_INTENSITY_TRESH'])
+        downsampled_final_mask = downsampled_final_mask.reshape(-1, 1)
+        data_dict['segmentation_downsample'] = np.concatnate([downsampled_point_cloud[downsampled_final_mask, :3], downsampled_point_cloud[downsampled_final_mask, -1]], axis=1)
+
     else:
-        # dorectly using downsampled output mask from model --> change the pointcloud to the used downsample
+        # directly using downsampled output mask from model --> change the pointcloud to the used downsample
         final_mask = model_results[:, -2].astype(bool)
         point_cloud = model_results[:, :4]
         final_mask = np.logical_and(final_mask, point_cloud[:, 3] >= config['POSTPROCESSING_INTENSITY_TRESH'])
@@ -49,7 +59,7 @@ if __name__ == '__main__':
     #pcd_raw = PyntCloud.from_file(pcd_path)
     #pcd_numpy = pcd_raw.points.to_numpy()
     pcd_numpy = np.load('/home/koondra/merge_test_small.npz')['data']
-    pcd_numpy = pcd_numpy[pcd_numpy[:,0]>50,:]
+    pcd_numpy = pcd_numpy[pcd_numpy[:, 0] > 50, :]
     data_dict = dict()
     data_dict['data'] = pcd_numpy[:, :5]
     print(f"pointcloud loaded {data_dict['data'].shape}")
