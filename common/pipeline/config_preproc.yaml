@@ -3,11 +3,11 @@ RUN_PARTS:
   INSTANCES: False
   MATCHING: False
 SAVE_NAMES:
-  SEGMENTATION: "segmentation.npy"
+  SEGMENTATION: "segmentation01.npy"
   INSTANCES: "instances.npy"
   MATCHING: "matching.npy"
 LOAD_NAMES:
-  SEGMENTATION: "segmentation.npy"
+  SEGMENTATION: "segmentation01.npy"
   INSTANCES: "instances.npy"
   MATCHING: "matching.npy"
 DATA_PATH: "common/data/split_sample.npz"

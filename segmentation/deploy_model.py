@@ -258,17 +258,15 @@ def deploy_model(point_cloud: str, pipeline_config):
     print('Labeling outputs')
     labeled_downsample = get_labels(outputs_dict, downsampled_point_cloud, masks, pipeline_config)
 
-    if pipeline_config['MODEL_RETURN_UPSAMPLED']:
-        labels = labeled_downsample[:, -2]
-        full_labels = upsample_mask(
-            point_cloud,
-            labels,
-            grid_indices,
-            grid_min_coords,
-            pipeline_config['MODEL_VOXEL_SIZE']
-        )
+    labels = labeled_downsample[:, -2]
+    full_labels = upsample_mask(
+        point_cloud,
+        labels,
+        grid_indices,
+        grid_min_coords,
+        pipeline_config['MODEL_VOXEL_SIZE']
+    )
 
-        return full_labels, labeled_downsample
-    else:
-        return labeled_downsample
+    return full_labels, labeled_downsample
+
 

@@ -17,32 +17,20 @@ def segmentation_main(data_dict, config):
 
     print('Saving model results')
 
-    if config['MODEL_RETURN_UPSAMPLED']:
-        # using upsampled mask --> mask compatible with original pointcloud
-        mask_model_results, downsampled_model_results = model_results
-        final_mask = mask_model_results.astype(bool)
-        final_mask = np.logical_and(final_mask, point_cloud[:, 3] >= config['POSTPROCESSING_INTENSITY_TRESH'])
-        data_dict['segmentation_mask'] = final_mask
-        data_dict['segmentation'] = np.concatenate([point_cloud[final_mask, :3], point_cloud[final_mask, -1].reshape(-1, 1)], axis=1)
+    # using upsampled mask --> mask compatible with original pointcloud
+    mask_model_results, downsampled_model_results = model_results
+    final_mask = mask_model_results.astype(bool)
+    final_mask = np.logical_and(final_mask, point_cloud[:, 3] >= config['POSTPROCESSING_INTENSITY_TRESH'])
+    data_dict['segmentation_mask'] = final_mask
+    data_dict['segmentation'] = np.concatenate([point_cloud[final_mask, :3], point_cloud[final_mask, -1].reshape(-1, 1)], axis=1)
 
-        # save downsampled outputs for debugging
-        downsampled_final_mask = downsampled_model_results[:, -2].astype(bool)
-        downsampled_point_cloud = downsampled_model_results[:, :4]
-        downsampled_final_mask = np.logical_and(downsampled_final_mask, downsampled_point_cloud[:, 3] >= config['POSTPROCESSING_INTENSITY_TRESH']).reshape(-1)
-        data_dict['segmentation_downsample'] = downsampled_point_cloud[downsampled_final_mask, :]
+    # save downsampled outputs for debugging
+    downsampled_final_mask = downsampled_model_results[:, -2].astype(bool)
+    downsampled_point_cloud = downsampled_model_results[:, :4]
+    downsampled_final_mask = np.logical_and(downsampled_final_mask, downsampled_point_cloud[:, 3] >= config['POSTPROCESSING_INTENSITY_TRESH']).reshape(-1)
+    data_dict['segmentation_downsample'] = downsampled_point_cloud[downsampled_final_mask, :]
 
-    else:
-        # directly using downsampled output mask from model --> change the pointcloud to the used downsample
-        final_mask = model_results[:, -2].astype(bool)
-        point_cloud = model_results[:, :4]
-        final_mask = np.logical_and(final_mask, point_cloud[:, 3] >= config['POSTPROCESSING_INTENSITY_TRESH'])
-        data_dict['data'] = point_cloud
-        data_dict['segmentation_mask'] = final_mask
-
-        final_mask = final_mask.reshape(-1, 1)
-        data_dict['segmentation'] = np.concatenate([point_cloud[final_mask, :3], point_cloud[final_mask, -1]], axis=1)
-
-    if config['ANIMATION']:
+    if config['ANIMATION'] and False:
         visualize_points(point_cloud, point_cloud[final_mask, :])
 
 if __name__ == '__main__':
