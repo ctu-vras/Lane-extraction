@@ -8,7 +8,7 @@ SAVE_NAMES:
   INSTANCES: "instances.npy"
   MATCHING: "matching.npy"
 LOAD_NAMES:
-  SEGMENTATION: "segmentation02.npy"
+  SEGMENTATION: "segmentation.npy"
   INSTANCES: "instances.npy"
   MATCHING: "matching.npy"
 DATA_PATH: "/home/koondra/temp_school/lane_marking/frame_id_correction/Lane-extraction/test.npz"
