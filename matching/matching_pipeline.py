@@ -8,7 +8,7 @@ from matching.export_lines import xml_result
 from matching.losses import *
 import torch
 
-def matching_main(point_cloud, cuda_card, file_name, run_animation):
+def matching_main(point_cloud, cuda_card, file_name, run_animation,animation_folder):
     # load config with constants
     with open('matching/config.yaml', "r") as f:
         config = yaml.safe_load(f)
@@ -68,7 +68,7 @@ def matching_main(point_cloud, cuda_card, file_name, run_animation):
         time_text = ax.text(0.05, 0.95, '', horizontalalignment='left', verticalalignment='top', transform=ax.transAxes)
         time_text.set_text('hello')
         # data = np.stack([x, y]).T
-        plt.savefig('matching/lines_first.png')
+        plt.savefig(animation_folder + "lines_first.png")
     # create arrays to store losses
     chamfer_losses = torch.zeros(config['first_iteration_num']).detach()
     vector_smoothness_losses = torch.zeros(config['first_iteration_num']).detach()
@@ -120,7 +120,7 @@ def matching_main(point_cloud, cuda_card, file_name, run_animation):
     if run_animation:
         print("before ANIMATION")
         anim = FuncAnimation(fig, animate, frames=config['first_iteration_num'], interval=200)
-        anim.save('animation.gif', writer='pillow', fps=5)
+        anim.save(animation_folder + "animation.gif", writer='pillow', fps=5)
         print("after ANIMATION")
         fig = plt.figure()
         ax = plt.axes()
@@ -135,7 +135,7 @@ def matching_main(point_cloud, cuda_card, file_name, run_animation):
         y_from = shorten_centers[:, 1]
         ax.scatter(x_from, y_from, c='r', lw=2)
         # data = np.stack([x, y]).T
-        plt.savefig('matching/lines_middle.png')
+        plt.savefig(animation_folder + "lines_middle.png")
     # run second iteration to just get to nearest point
     for j in range(config['second_iteration_num']):
         optimizer.zero_grad()
@@ -177,5 +177,5 @@ def matching_main(point_cloud, cuda_card, file_name, run_animation):
         y_from = shorten_centers[:, 1]
         ax.scatter(x_from, y_from, c='r', lw=2)
         # data = np.stack([x, y]).T
-        plt.savefig('matching/lines_final.png')
+        plt.savefig(animation_folder + "ines_final.png")
     torch.cuda.empty_cache()

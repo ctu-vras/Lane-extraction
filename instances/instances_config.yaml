@@ -8,8 +8,8 @@ data:
   names: ["test11-13"] #, "test12-14", "test13-15", "test14-16"]#["test01", "test02", "test03", "test04", "test05", "test06", "test07", "test08", "test11", "test12", "test13", "test14", "test15", "test16", "test17"]
   start_end: [11, 13]                 # [start, end]
   visualize: False
-  max_frames: 15
-  min_frames: 10
+  max_frames: 25
+  min_frames: 15
 
 clustering:
   methods: ["DBSCAN", "smooth"]     # ["smooth", "DBSCAN", "HDBSCAN", "small_clusters", "oscillation", "flow", "lock"]
