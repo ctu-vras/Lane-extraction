@@ -30,8 +30,8 @@ def segmentation_main(data_dict, config):
     downsampled_final_mask = np.logical_and(downsampled_final_mask, downsampled_point_cloud[:, 3] >= config['POSTPROCESSING_INTENSITY_TRESH']).reshape(-1)
     data_dict['segmentation_downsample'] = downsampled_point_cloud[downsampled_final_mask, :]
 
-    if config['ANIMATION']:
-        visualize_points(point_cloud, point_cloud[final_mask, :])
+    #if config['ANIMATION']:
+    #    visualize_points(point_cloud, point_cloud[final_mask, :])
 
 if __name__ == '__main__':
     import sys

@@ -1,7 +1,7 @@
 FROM gaetanlandreau/pytorch3d:0.7.4
 #FROM cpark90/pytorch3d:gl-runtime
-ENV TORCH_CUDA_ARCH_LIST="Turing Ampere Ada Hopper"
-ARG TORCH_CUDA_ARCH_LIST="Turing Ampere Ada Hopper"
+ENV TORCH_CUDA_ARCH_LIST="Turing Ampere"
+ARG TORCH_CUDA_ARCH_LIST="Turing Ampere"
 COPY . /Lane-extraction
 WORKDIR /Lane-extraction
 

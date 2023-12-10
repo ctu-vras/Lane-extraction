@@ -1,30 +1,28 @@
 RUN_PARTS:
-  SEGMENTATION: True
-  INSTANCES: True
-  MATCHING: True
+  SEGMENTATION: true
+  INSTANCES: true 
+  MATCHING: true
 SAVE_NAMES:
-  SEGMENTATION: "segmentation.npy"
-  SEGMENTATION_DOWNSAMPLE: "segmentation_downsample.npy"
-  INSTANCES: "instances.npy"
-  MATCHING: "matching.npy"
+  SEGMENTATION: source/out/segmentation.npy
+  INSTANCES: source/out/instances.npy
+  MATCHING: source/out/matching.npy
+  SEGMENTATION_DOWNSAMPLE: source/out/segmentation_downsample.npy
 LOAD_NAMES:
-  SEGMENTATION: "segmentation.npy"
-  INSTANCES: "instances.npy"
-  MATCHING: "matching.npy"
-DATA_PATH: "/home/koondra/temp_school/lane_marking/frame_id_correction/Lane-extraction/test.npz"
-CUDA_CARD: 'cuda:0'
-XML_FILE_NAME: "result.xml"
-OUTPUT_FILE_NAME: "output.npz"
-ANIMATION: True
-
+  SEGMENTATION: source/in/segmentation.npy
+  INSTANCES: source/in/instances.npy
+  MATCHING: matching.npy
+DATA_PATH: source/in/unlimited-BASE_Veh01_20230208_105703_002_None.npz
+CUDA_CARD: cuda:0
 MODEL_CONFIG_PATH: "common/pipeline/models/model02/model_checkpoint_wd_config.yaml"
-MODEL_PARTITION_SIZE: 60 #60 for model 2 / 30 for model 1
+OUTPUT_FILE_NAME: "source/out/out_of_there.npz"
+XML_FILE_NAME: "source/out/result.xml"
+ANIMATION: true
+ANIMATION_FILE_FOLDER: "source/out/"
+MODEL_PARTITION_SIZE: 60
 MODEL_VOXEL_SIZE: 0.15
-MODEL_SAVE_DEBUG: False
-MODEL_SELECTION_STRATEGY: "last"
+MODEL_SAVE_DEBUG: false
+MODEL_SELECTION_STRATEGY: last
 MODEL_MAX_NUM_PTS: 1000000
-MAX_DISTANCE: 16
-MIN_Z_HEIGHT: -20
-
-
+MAX_DISTANCE: 15
+MIN_Z_HEIGHT: -5
 POSTPROCESSING_INTENSITY_TRESH: 100
