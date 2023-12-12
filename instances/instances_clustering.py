@@ -2,9 +2,9 @@ import torch
 
 from pytorch3d.ops.knn import knn_points
 
-from instances.instances_plot import *
-from instances.instances_data_generating import *
-from instances.instances_utils import *
+from instances_plot import *
+from instances_data_generating import *
+from instances_utils import *
 
 from tqdm import tqdm
 

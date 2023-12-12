@@ -1,9 +1,9 @@
 import torch
 import yaml
 
-from instances.instances_clustering import *
-from instances.instances_filtering import *
-from instances.instances_utils import *
+from instances_clustering import *
+from instances_filtering import *
+from instances_utils import *
 
 
 def instances_main(point_cloud_dictionary: dict, cuda_card: str) -> dict:
@@ -28,8 +28,8 @@ def instances_main(point_cloud_dictionary: dict, cuda_card: str) -> dict:
     print("-------------------------------------------------")
 
     # Load config
-    config = yaml.load(open("instances/instances_config.yaml", "r"), Loader=yaml.FullLoader)
-    #config = yaml.load(open("instances_config.yaml", "r"), Loader=yaml.FullLoader)
+    # config = yaml.load(open("instances/instances_config.yaml", "r"), Loader=yaml.FullLoader)
+    config = yaml.load(open("instances_config.yaml", "r"), Loader=yaml.FullLoader)
 
     # Load input data
     original_segmented_pc = point_cloud_dictionary['segmentation']
@@ -139,19 +139,27 @@ def instances_main(point_cloud_dictionary: dict, cuda_card: str) -> dict:
 
 
 if __name__ == "__main__":
-    process = False
+    process = True
 
     if process:
         from instances_real_data_loading import *
-        name = "test"
+        name = "segmentation"
         # Load point cloud
-        pc = load_real_data_pc(name, start_end=[11, 17], include_frame_id=True)
+        pc = load_real_data_pc(name, start_end=[18, 18], include_frame_id=True, ext="npy")
+
+        # TODO: remove this part
+        # Get rid of the 3. dimension but keep the fourth one
+        pc = pc[:, [0, 1, 2, 4]]
+
+        # Get only first 10 000 points
+        # pc = pc[:100000]
+        # TODO: remove this part
 
         # Create dictionary
         pc_dict = {"segmentation": pc}
 
         # Select GPU
-        cuda_card = "cuda:7"
+        cuda_card = "cuda:4"
 
         # Run main function
         pc_dict = instances_main(pc_dict, cuda_card=cuda_card)
