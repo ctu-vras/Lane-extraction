@@ -5,7 +5,3 @@ services:
     volumes:
        - /home/komajz/PycharmProjects/Lane-extraction/common/data:/Lane-extraction/source/in
        - /home/komajz/PycharmProjects/Lane-extraction/common/data/out:/Lane-extraction/source/out
-
-      #context: .
-    #ports:
-      #- 8000:8000

@@ -1,2 +1,4 @@
 .idea
-
+*.gif
+*.pcd
+*.pyc
