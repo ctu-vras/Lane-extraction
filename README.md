@@ -14,6 +14,11 @@
 
 [//]: # (    - Output:)
 
+## Links to presentations and codes from final meeting:
+- Lane Matching presentation: https://docs.google.com/presentation/d/1_aKsyaCRaU2LQY1fK3FoJUxReD7GSdPmB6vxaPzUNW0/edit?usp=sharing
+- Lane Matching ipynb notebook: https://github.com/KomajzCz/FEL-matching-notebook
+  
+
 ## Current state of branches:
 - main: branch has an old code. It should be similiar with heuristic but README for docker is in common/pipeline. Main purpose is overview of tasks given by Patrik.
 - heuristic: actual branch with old segmentation, but it is in final state and can be packaged into Docker
