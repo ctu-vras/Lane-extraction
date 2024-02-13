@@ -35,6 +35,7 @@ def main():
     print("starting main")
     #dictionary to save all the data
     point_cloud = {}
+
     #load point cloud from file
     if config['RUN_PARTS']['SEGMENTATION']:
         print("Loading point cloud")
@@ -105,7 +106,7 @@ def main():
     if config['RUN_PARTS']['MATCHING']:
         #try:
         print("Matching start")
-        matching_main(point_cloud,config['CUDA_CARD'],config['XML_FILE_NAME'],config['ANIMATION'])
+        matching_main(point_cloud,config['CUDA_CARD'],config['XML_FILE_NAME'],config['ANIMATION'],config['ANIMATION_FILE_FOLDER'])
         print("Matching done")
         #save if matching was successful
         pose_list = []

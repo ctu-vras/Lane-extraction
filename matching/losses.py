@@ -261,7 +261,6 @@ def compute_multiplier(centers_array, vectors_array, knn_taken=5):
             cur_idx = idx[0][0][j]
             if cur_idx >= i:
                 cur_idx += 1
-            print("center", centers_array[cur_idx])
             # calculate angle between vector we have from pca and direction to center we want to check
             inner_prod = torch.dot(vectors_array[i],
                                    torch.nn.functional.normalize((centers_array[cur_idx] - centers_array[i]), dim=0))

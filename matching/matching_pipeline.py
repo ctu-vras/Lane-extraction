@@ -177,5 +177,5 @@ def matching_main(point_cloud, cuda_card, file_name, run_animation,animation_fol
         y_from = shorten_centers[:, 1]
         ax.scatter(x_from, y_from, c='r', lw=2)
         # data = np.stack([x, y]).T
-        plt.savefig(animation_folder + "ines_final.png")
+        plt.savefig(animation_folder + "lines_final.png")
     torch.cuda.empty_cache()
